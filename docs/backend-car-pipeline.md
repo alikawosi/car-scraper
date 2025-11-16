@@ -116,7 +116,7 @@ The backend exposes two main endpoints:
 - **Path:** `/search/start`
 - **Request body:** JSON with:
   - `criteria` – generic search criteria (make, model, ranges, etc.)
-  - `websites` – list of site IDs to search (e.g. `["autotrader"]`)
+  - `websites` – list of site IDs to search (e.g. `["autotrader", "ebay"]`)
 
 #### Request body schema (Pydantic: `SearchRequestBody`)
 
@@ -138,8 +138,8 @@ class SearchRequestBody(BaseModel):
     criteria: SearchCriteria
     websites: List[str] = Field(
         ...,
-        example=["autotrader"],
-        description="List of site IDs, e.g. ['autotrader']"
+        example=["autotrader", "ebay"],
+        description="List of site IDs, e.g. ['autotrader', 'ebay']"
     )
 ```
 
@@ -179,7 +179,7 @@ Example body for Postman:
     "radiusMiles": 150,
     "resultsPerSite": 3
   },
-  "websites": ["autotrader"]
+  "websites": ["autotrader", "ebay"]
 }
 ```
 
@@ -306,26 +306,42 @@ Key responsibilities:
 
 **Note:** auto-generated selectors will need to be updated manually to match the real AutoTrader DOM. Keep them simple and add `# TODO` comments.
 
-### 4.4. Adapters registry
+### 4.4. Example: eBay adapter
 
-In `app/adapters/__init__.py`:
+`app/adapters/ebay.py` mirrors the AutoTrader implementation but targets the public eBay Motors search page.
+
+- Build a query string for `_nkw` (keywords) plus `_udlo`/`_udhi` for price filters.
+- Parse listing cards via selectors such as `li.s-item`, `.s-item__title`, `.s-item__price`, and `.s-item__image-img`.
+- Extract a `ScrapedCar` with price, mileage (if present in the dynamic specs block), inferred location, and the image URL from either `src` or `data-src`.
+
+Adding this adapter means the API can now handle `websites` arrays that include `"ebay"`.
+
+### 4.5. Adapters registry
+
+The pipeline keeps a lightweight registry of adapters in `app/pipeline.py`:
 
 ```python
-from typing import Optional, Dict
 from app.adapters.autotrader import AutoTraderAdapter
-from app.adapters.base import SiteAdapter
+from app.adapters.ebay import EbayAdapter
 
-_adapters: Dict[str, SiteAdapter] = {
-    "autotrader": AutoTraderAdapter(),
-    # future: "ebay": EbayAdapter(), "gumtree": GumtreeAdapter(), ...
+ADAPTER_FACTORIES = {
+    "autotrader": AutoTraderAdapter,
+    "ebay": EbayAdapter,
 }
 
+def _get_adapter(site_id: str) -> BaseAdapter | SimpleSiteAdapter:
+    site_id = site_id.lower()
+    adapter = ADAPTERS.get(site_id)
+    if adapter:
+        return adapter
 
-def get_adapter(site_id: str) -> Optional[SiteAdapter]:
-    return _adapters.get(site_id)
+    factory = ADAPTER_FACTORIES.get(site_id)
+    adapter = factory() if factory else SimpleSiteAdapter(site_id)
+    ADAPTERS[site_id] = adapter
+    return adapter
 ```
 
-This allows the pipeline to loop over a list of site IDs and remain agnostic to each site’s URL format.
+`run_job` calls `_get_adapter(site_id)` for every requested website, ensuring we reuse concrete adapters when available and fall back to `SimpleSiteAdapter` for demo-only sites.
 
 ---
 

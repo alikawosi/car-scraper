@@ -6,7 +6,9 @@ import logging
 from typing import Dict, Iterable, List, Mapping, Optional, Union
 from uuid import uuid4
 
-from app.adapters.base import ScrapedCar
+from app.adapters.autotrader import AutoTraderAdapter
+from app.adapters.base import BaseAdapter, ScrapedCar
+from app.adapters.ebay import EbayAdapter
 from app.background import get_queue
 from app.models import JobStatus, Listing, ResultsResponse, SearchCriteria
 
@@ -59,7 +61,12 @@ class SimpleSiteAdapter:
         return results
 
 
-ADAPTERS: Dict[str, SimpleSiteAdapter] = {}
+ADAPTER_FACTORIES: Dict[str, type[BaseAdapter]] = {
+    "autotrader": AutoTraderAdapter,
+    "ebay": EbayAdapter,
+}
+
+ADAPTERS: Dict[str, BaseAdapter | SimpleSiteAdapter] = {}
 
 _OPENAI_CLIENT: Optional["OpenAI"] = None
 
@@ -117,9 +124,9 @@ def run_job(
 
     try:
         results: List[Listing] = []
-        sites = list(websites or []) or ["generic"]
+        sites = list(websites or []) or list(ADAPTER_FACTORIES.keys())
         for site in sites:
-            adapter = ADAPTERS.setdefault(site, SimpleSiteAdapter(site))
+            adapter = _get_adapter(site)
             try:
                 scraped_cars = adapter.scrape(criteria)
             except Exception as exc:
@@ -292,3 +299,19 @@ def _extract_text_from_response(response: object) -> str:
 
 
 __all__ = ["start_job", "run_job", "get_job_results", "JOBS"]
+
+
+def _get_adapter(site: str) -> BaseAdapter | SimpleSiteAdapter:
+    site_key = site.lower()
+    adapter = ADAPTERS.get(site_key)
+    if adapter:
+        return adapter
+
+    factory = ADAPTER_FACTORIES.get(site_key)
+    if factory is not None:
+        adapter = factory()
+    else:
+        adapter = SimpleSiteAdapter(site_key)
+
+    ADAPTERS[site_key] = adapter
+    return adapter
