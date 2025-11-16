@@ -3,10 +3,11 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, Iterable, List, Mapping, Optional, Union
 from uuid import uuid4
 
 from app.adapters.base import ScrapedCar
+from app.background import get_queue
 from app.models import JobStatus, Listing, ResultsResponse, SearchCriteria
 
 try:  # pragma: no cover - optional dependency wiring
@@ -76,42 +77,68 @@ def _get_openai_client() -> Optional["OpenAI"]:
 
 
 def start_job(criteria: SearchCriteria, websites: Optional[List[str]]) -> str:
-    """Create a new job entry and synchronously execute the scraping pipeline."""
+    """Create a new job entry and enqueue the scraping pipeline."""
 
     job_id = str(uuid4())
     JOBS[job_id] = ResultsResponse(job_id=job_id, status=JobStatus.PENDING, results=[])
-    run_job(job_id, criteria, websites)
+
+    queue = get_queue()
+    criteria_payload = criteria.dict()
+    websites_payload = list(websites or []) or None
+
+    if queue is None:
+        LOGGER.info("Redis queue unavailable; running job %s synchronously", job_id)
+        run_job(job_id, criteria_payload, websites_payload)
+    else:
+        queue.enqueue(
+            run_job,
+            job_id,
+            criteria_payload,
+            websites_payload,
+            job_id=job_id,
+        )
     return job_id
 
 
 def run_job(
-    job_id: str, criteria: SearchCriteria, websites: Optional[Iterable[str]] = None
+    job_id: str,
+    criteria: Union[SearchCriteria, Mapping[str, object]],
+    websites: Optional[Iterable[str]] = None,
 ) -> None:
     """Execute the scraping + valuation workflow for a given job."""
+
+    if not isinstance(criteria, SearchCriteria):
+        criteria = SearchCriteria(**dict(criteria))
 
     if job_id not in JOBS:
         JOBS[job_id] = ResultsResponse(job_id=job_id, status=JobStatus.PENDING, results=[])
 
     JOBS[job_id] = ResultsResponse(job_id=job_id, status=JobStatus.RUNNING, results=[])
 
-    results: List[Listing] = []
-    sites = list(websites or []) or ["generic"]
-    for site in sites:
-        adapter = ADAPTERS.setdefault(site, SimpleSiteAdapter(site))
-        try:
-            scraped_cars = adapter.scrape(criteria)
-        except Exception as exc:
-            LOGGER.exception("Adapter %s failed: %s", site, exc)
-            continue
+    try:
+        results: List[Listing] = []
+        sites = list(websites or []) or ["generic"]
+        for site in sites:
+            adapter = ADAPTERS.setdefault(site, SimpleSiteAdapter(site))
+            try:
+                scraped_cars = adapter.scrape(criteria)
+            except Exception as exc:
+                LOGGER.exception("Adapter %s failed: %s", site, exc)
+                continue
 
-        for car in scraped_cars:
-            plate = _read_plate_from_image(car.images)
-            valuation = _value_car(car, plate)
-            listing = car.to_listing(valuation.get("fair_price"))
-            listing.title = f"{listing.title} (Plate: {plate})"
-            results.append(listing)
+            for car in scraped_cars:
+                plate = _read_plate_from_image(car.images)
+                valuation = _value_car(car, plate)
+                listing = car.to_listing(valuation.get("fair_price"))
+                listing.title = f"{listing.title} (Plate: {plate})"
+                results.append(listing)
 
-    JOBS[job_id] = ResultsResponse(job_id=job_id, status=JobStatus.COMPLETED, results=results)
+        JOBS[job_id] = ResultsResponse(
+            job_id=job_id, status=JobStatus.COMPLETED, results=results
+        )
+    except Exception as exc:  # pragma: no cover - defensive logging
+        LOGGER.exception("Job %s failed: %s", job_id, exc)
+        JOBS[job_id] = ResultsResponse(job_id=job_id, status=JobStatus.FAILED, results=[])
 
 
 def get_job_results(job_id: str) -> ResultsResponse:
