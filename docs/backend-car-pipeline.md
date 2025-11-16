@@ -89,6 +89,16 @@ from openai import OpenAI
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 ```
 
+### 2.3. Background job queue
+
+Heavy scraping and valuation work now runs in the background via **Redis + RQ**:
+
+- Configure Redis via `REDIS_URL` (or `RQ_REDIS_URL`) or `REDIS_HOST`/`REDIS_PORT` env vars.
+- Jobs are queued on `RQ_QUEUE_NAME` (defaults to `car-scraper`).
+- Run a worker locally with `python -m app.worker` once Redis is available.
+- If Redis is unreachable, the API falls back to synchronous execution so the developer
+  experience remains smooth.
+
 ---
 
 ## 3. HTTP API

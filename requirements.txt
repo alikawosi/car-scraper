@@ -1,4 +1,3 @@
-
 fastapi
 uvicorn[standard]
 requests
@@ -6,3 +5,5 @@ pydantic
 python-dotenv
 openai
 beautifulsoup4
+redis
+rq
