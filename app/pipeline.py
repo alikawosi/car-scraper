@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import json
 import logging
-from dataclasses import dataclass, field
 from typing import Dict, Iterable, List, Optional
 from uuid import uuid4
 
+from app.adapters.base import ScrapedCar
 from app.models import JobStatus, Listing, ResultsResponse, SearchCriteria
 
 try:  # pragma: no cover - optional dependency wiring
@@ -18,32 +18,6 @@ LOGGER = logging.getLogger(__name__)
 
 # Public store exposed via ``get_job_results``.
 JOBS: Dict[str, ResultsResponse] = {}
-
-
-@dataclass
-class ScrapedCar:
-    """Lightweight container describing a scraped vehicle listing."""
-
-    listing_id: str
-    website: str
-    title: str
-    price: float
-    mileage_km: Optional[int]
-    location: Optional[str]
-    images: List[str] = field(default_factory=list)
-
-    def to_listing(self, valuation: Optional[float]) -> Listing:
-        """Convert to the API ``Listing`` model with valuation info attached."""
-
-        return Listing(
-            listing_id=self.listing_id,
-            website=self.website,
-            title=self.title,
-            price=self.price,
-            mileage_km=self.mileage_km,
-            location=self.location,
-            valuation=valuation,
-        )
 
 
 class SimpleSiteAdapter:
