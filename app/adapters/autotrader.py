@@ -25,10 +25,10 @@ class SelectorConfig:
 
 
 class AutoTraderAdapter(BaseAdapter):
-    """Scrape search results from autotrader.com."""
+    """Scrape search results from autotrader.co.uk."""
 
     SITE_NAME = "autotrader"
-    BASE_URL = "https://www.autotrader.com/cars-for-sale"
+    BASE_URL = "https://www.autotrader.co.uk/car-search"
 
     def __init__(self, *, session=None) -> None:
         super().__init__(self.SITE_NAME, self.BASE_URL, session=session)
