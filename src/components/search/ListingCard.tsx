@@ -1,15 +1,18 @@
+import { memo, useMemo } from "react";
 import Image from "next/image";
-import { Heart, MapPin, Loader2, ScanEye } from "lucide-react";
+import { Heart, MapPin, ScanEye } from "lucide-react";
 import { ListingViewModel } from "@/view-models/ListingViewModel";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { Listing } from "@/lib/types";
 
 interface ListingCardProps {
-  viewModel: ListingViewModel;
+  listing: Listing;
   className?: string;
 }
 
-export function ListingCard({ viewModel, className }: ListingCardProps) {
+export const ListingCard = memo(function ListingCard({ listing, className }: ListingCardProps) {
+  const viewModel = useMemo(() => new ListingViewModel(listing), [listing]);
   const rating = viewModel.priceRating;
   const isAnalyzing = viewModel.isAnalyzing;
 
@@ -160,4 +163,4 @@ export function ListingCard({ viewModel, className }: ListingCardProps) {
       </div>
     </div>
   );
-}
+});

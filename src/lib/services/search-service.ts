@@ -68,7 +68,7 @@ export class SearchService {
             } else if (event.type === "error") {
               console.error("Stream error:", event.message);
             }
-          } catch (e) {
+          } catch {
             console.warn("Failed to parse stream line:", line);
           }
         }

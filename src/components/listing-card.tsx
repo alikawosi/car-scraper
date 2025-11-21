@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { ListingModel } from "@/lib/models/Listing";
 import { Heart } from "lucide-react";
 

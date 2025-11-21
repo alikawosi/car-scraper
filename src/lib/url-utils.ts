@@ -4,7 +4,7 @@ export function criteriaToParams(criteria: SearchCriteria): URLSearchParams {
   const params = new URLSearchParams();
   
   // Helper to set param if value exists
-  const set = (key: string, val: any) => {
+  const set = (key: string, val: string | number | boolean | undefined | null) => {
     if (val !== undefined && val !== null && val !== "") {
       params.set(key, String(val));
     }
@@ -61,7 +61,7 @@ export function paramsToCriteria(searchParams: URLSearchParams): SearchCriteria 
     maxEngineSize: getNum("maxEngineSize"),
     fuelType: getStr("fuelType"),
     bodyType: getStr("bodyType"),
-    sellerType: getStr("sellerType") as any,
+    sellerType: getStr("sellerType") as SearchCriteria["sellerType"],
     sort: getStr("sort"),
     limit: getNum("limit"),
     transmissions: searchParams.getAll("transmissions"),

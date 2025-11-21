@@ -2,9 +2,9 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { Loader2, Heart, User, Menu, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { SearchCriteria, Listing } from "@/lib/types";
-import { ListingViewModel } from "@/view-models/ListingViewModel";
 import { SearchService } from "@/lib/services/search-service";
 import { ListingCard } from "@/components/search/ListingCard";
 import { FilterBar } from "@/components/search/FilterBar";
@@ -120,7 +120,7 @@ function SearchContent() {
           No results found
         </h2>
         <p className="text-slate-500 mb-8 max-w-md">
-          We couldn't find any cars matching your criteria. Try adjusting your filters or check out these popular searches:
+          We couldn&apos;t find any cars matching your criteria. Try adjusting your filters or check out these popular searches:
         </p>
         
         <div className="flex flex-wrap justify-center gap-4">
@@ -150,7 +150,6 @@ function SearchContent() {
     );
   }
 
-  const viewModels = listings.map((l) => new ListingViewModel(l));
   const currentPage = currentCriteria.page || 1;
 
   return (
@@ -167,8 +166,8 @@ function SearchContent() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {viewModels.map((vm) => (
-          <ListingCard key={vm.id} viewModel={vm} />
+        {listings.map((listing) => (
+          <ListingCard key={listing.listingId} listing={listing} />
         ))}
       </div>
 
@@ -209,26 +208,26 @@ export default function SearchPage() {
       <nav className="bg-white border-b sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <a
+            <Link
               href="/"
               className="text-2xl font-bold text-[#E60012] tracking-tighter"
             >
               AutoTrader
-            </a>
+            </Link>
             <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-              <a href="/" className="hover:text-[#E60012]">
+              <Link href="/" className="hover:text-[#E60012]">
                 Home
-              </a>
+              </Link>
               <span className="text-slate-900 font-semibold">Used cars</span>
-              <a href="#" className="hover:text-[#E60012]">
+              <Link href="#" className="hover:text-[#E60012]">
                 New cars
-              </a>
-              <a href="#" className="hover:text-[#E60012]">
+              </Link>
+              <Link href="#" className="hover:text-[#E60012]">
                 Sell
-              </a>
-              <a href="#" className="hover:text-[#E60012]">
+              </Link>
+              <Link href="#" className="hover:text-[#E60012]">
                 Valuation
-              </a>
+              </Link>
             </div>
           </div>
           <div className="flex items-center gap-6 text-sm font-medium text-slate-600">
