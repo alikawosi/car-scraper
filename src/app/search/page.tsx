@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Loader2, Heart, User, Menu, ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2, Heart, User, Menu, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { SearchCriteria, Listing } from "@/lib/types";
 import { ListingViewModel } from "@/view-models/ListingViewModel";
 import { SearchService } from "@/lib/services/search-service";
@@ -95,6 +95,57 @@ function SearchContent() {
           Something went wrong
         </h2>
         <p className="text-slate-500 mt-2">{error}</p>
+      </div>
+    );
+  }
+
+  const handleRecommendedSearch = (make: string, model: string) => {
+    const newCriteria: SearchCriteria = {
+      make,
+      model,
+      page: 1,
+      sort: "most-recent"
+    };
+    const queryString = encodeURIComponent(JSON.stringify(newCriteria));
+    router.push(`/search?criteria=${queryString}`);
+  };
+
+  if (!loading && listings.length === 0) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
+        <div className="bg-slate-100 p-6 rounded-full mb-6">
+          <Search className="w-10 h-10 text-slate-400" />
+        </div>
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">
+          No results found
+        </h2>
+        <p className="text-slate-500 mb-8 max-w-md">
+          We couldn't find any cars matching your criteria. Try adjusting your filters or check out these popular searches:
+        </p>
+        
+        <div className="flex flex-wrap justify-center gap-4">
+          <Button 
+            variant="outline" 
+            onClick={() => handleRecommendedSearch("BMW", "3 Series")}
+            className="hover:border-[#E60012] hover:text-[#E60012]"
+          >
+            BMW 3 Series
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => handleRecommendedSearch("Audi", "A3")}
+            className="hover:border-[#E60012] hover:text-[#E60012]"
+          >
+            Audi A3
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => handleRecommendedSearch("Mercedes-Benz", "C Class")}
+            className="hover:border-[#E60012] hover:text-[#E60012]"
+          >
+            Mercedes-Benz C Class
+          </Button>
+        </div>
       </div>
     );
   }
