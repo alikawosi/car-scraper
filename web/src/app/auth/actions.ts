@@ -67,6 +67,24 @@ export async function verifyOtp(formData: FormData) {
   redirect('/dashboard')
 }
 
+export async function signInWithGoogle() {
+  const supabase = await createClient()
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/auth/callback`,
+    },
+  })
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  if (data.url) {
+    redirect(data.url)
+  }
+}
+
 export async function signout() {
   const supabase = await createClient()
   const { error } = await supabase.auth.signOut()

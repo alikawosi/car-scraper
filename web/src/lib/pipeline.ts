@@ -61,6 +61,7 @@ export async function* runSearchGenerator(
   }
 
   if (uniqueCars.size === 0) {
+    yield { type: "listings", listings: [] };
     return;
   }
 
