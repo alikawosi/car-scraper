@@ -1,7 +1,9 @@
-import { SearchCriteria, Listing, SearchEvent } from "@/lib/types";
+import { SearchCriteria, Listing, SearchEvent, SearchOptions, SearchOption } from "@/lib/types";
+import { supabase } from "@/lib/supabase";
 
 export class SearchService {
   private static instance: SearchService;
+  private optionsCache: SearchOptions | null = null;
 
   private constructor() {}
 
@@ -10,6 +12,69 @@ export class SearchService {
       SearchService.instance = new SearchService();
     }
     return SearchService.instance;
+  }
+
+  public async getSearchOptions(): Promise<SearchOptions> {
+    if (this.optionsCache) {
+      return this.optionsCache;
+    }
+
+    try {
+      const [
+        { data: makes },
+        { data: bodyTypes },
+        { data: fuelTypes },
+        { data: transmissionTypes },
+        { data: doors },
+        { data: seats },
+        { data: searchRadius },
+      ] = await Promise.all([
+        supabase.from("makes").select("id, name").order("name"),
+        supabase.from("body_types").select("name, display_name").order("display_name"),
+        supabase.from("fuel_types").select("name, display_name").order("display_name"),
+        supabase.from("transmission_types").select("name, display_name").order("display_name"),
+        supabase.from("doors").select("value, display_name").order("value"),
+        supabase.from("seats").select("value, display_name").order("value"),
+        supabase.from("search_radius").select("value, display_name, sort_order").order("sort_order"),
+      ]);
+
+      // Fetch models separately or on demand? For now, let's fetch all models but maybe we should structure them by make.
+      // Actually, fetching all models might be too much if there are thousands.
+      // Let's just return empty models for now and handle dynamic fetching later, or fetch all if not too many.
+      // The file size was 260KB, which is manageable.
+      const { data: models } = await supabase.from("models").select("id, name, make_id").order("name");
+
+      const mapToOption = (item: any, valueKey: string, labelKey: string): SearchOption => ({
+        value: item[valueKey],
+        label: item[labelKey],
+      });
+
+      this.optionsCache = {
+        makes: (makes || []).map(m => ({ value: m.name, label: m.name, id: m.id })), // Include id for filtering models
+        models: (models || []).map(m => ({ value: m.name, label: m.name, ...m })), // Include make_id in extra props
+        bodyTypes: (bodyTypes || []).map(b => mapToOption(b, "name", "display_name")),
+        fuelTypes: (fuelTypes || []).map(f => mapToOption(f, "name", "display_name")),
+        transmissionTypes: (transmissionTypes || []).map(t => mapToOption(t, "name", "display_name")),
+        doors: (doors || []).map(d => mapToOption(d, "value", "display_name")),
+        seats: (seats || []).map(s => mapToOption(s, "value", "display_name")),
+        searchRadius: (searchRadius || []).map(r => mapToOption(r, "value", "display_name")),
+      };
+
+      return this.optionsCache;
+    } catch (error) {
+      console.error("Failed to fetch search options:", error);
+      // Return empty options or throw
+      return {
+        makes: [],
+        models: [],
+        bodyTypes: [],
+        fuelTypes: [],
+        transmissionTypes: [],
+        doors: [],
+        seats: [],
+        searchRadius: [],
+      };
+    }
   }
 
   public async search(

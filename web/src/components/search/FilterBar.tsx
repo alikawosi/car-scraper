@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, Heart, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
 import { FilterModal } from "./FilterModal";
-import { SearchCriteria } from "@/lib/types";
+import { SearchCriteria, SearchOptions } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const FILTERS = [
@@ -17,9 +17,10 @@ const FILTERS = [
 interface FilterBarProps {
   currentCriteria?: SearchCriteria;
   onApplyFilters?: (criteria: SearchCriteria) => void;
+  searchOptions?: SearchOptions;
 }
 
-export function FilterBar({ currentCriteria, onApplyFilters }: FilterBarProps) {
+export function FilterBar({ currentCriteria, onApplyFilters, searchOptions }: FilterBarProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => {
@@ -156,6 +157,7 @@ export function FilterBar({ currentCriteria, onApplyFilters }: FilterBarProps) {
           onClose={handleCloseModal}
           initialCriteria={currentCriteria}
           onApply={handleApply}
+          searchOptions={searchOptions}
         />
       )}
     </div>

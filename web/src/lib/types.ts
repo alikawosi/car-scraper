@@ -27,6 +27,23 @@ export interface SearchCriteria {
 
 export type Website = "autotrader" | "ebay" | "gumtree";
 
+export interface SearchOption {
+  value: string;
+  label: string;
+  [key: string]: any;
+}
+
+export interface SearchOptions {
+  makes: SearchOption[];
+  models: SearchOption[];
+  bodyTypes: SearchOption[];
+  fuelTypes: SearchOption[];
+  transmissionTypes: SearchOption[];
+  doors: SearchOption[];
+  seats: SearchOption[];
+  searchRadius: SearchOption[];
+}
+
 export interface ScrapedCar {
   listingId: string;
   website: Website;

@@ -1,5 +1,3 @@
-"use client";
-
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 
@@ -15,22 +13,15 @@ import {
 } from "@/components/ui/select";
 import { Modal } from "@/components/ui/modal";
 import { Slider } from "@/components/ui/slider";
-import { CAR_MAKES, getModelsForMake } from "@/lib/car-data";
-import {
-  BODY_TYPES,
-  DOOR_OPTIONS,
-  FUEL_TYPES,
-  SEAT_OPTIONS,
-  SORT_OPTIONS,
-  TRANSMISSION_OPTIONS,
-} from "@/lib/constants";
-import type { SearchCriteria, Website } from "@/lib/types";
+import { SORT_OPTIONS } from "@/lib/constants";
+import type { SearchCriteria, Website, SearchOptions, SearchOption } from "@/lib/types";
 
 interface FilterModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialCriteria: SearchCriteria;
   onApply: (criteria: SearchCriteria) => void;
+  searchOptions?: SearchOptions;
 }
 
 const SOURCE_OPTIONS: { label: string; value: Website }[] = [
@@ -44,6 +35,7 @@ export function FilterModal({
   onClose,
   initialCriteria,
   onApply,
+  searchOptions,
 }: FilterModalProps) {
   const [criteria, setCriteria] = useState<SearchCriteria>(initialCriteria);
 
@@ -61,10 +53,17 @@ export function FilterModal({
     criteria.maxMileage ?? 200000,
   ]);
 
-  const modelOptions = useMemo(
-    () => getModelsForMake(criteria.make),
-    [criteria.make]
-  );
+  const modelOptions = useMemo(() => {
+    if (!searchOptions?.models) return [];
+    if (!criteria.make) return [];
+    
+    // Find the selected make object to get its ID
+    const selectedMakeOption = searchOptions.makes.find(m => m.value === criteria.make);
+    if (!selectedMakeOption?.id) return [];
+
+    // Filter models by make_id
+    return searchOptions.models.filter(model => model.make_id === selectedMakeOption.id);
+  }, [criteria.make, searchOptions]);
 
   const handleInput =
     (field: keyof SearchCriteria) =>
@@ -197,9 +196,9 @@ export function FilterModal({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any">Any make</SelectItem>
-                {CAR_MAKES.map((make) => (
-                  <SelectItem key={make} value={make}>
-                    {make}
+                {searchOptions?.makes.map((make) => (
+                  <SelectItem key={make.value} value={make.value}>
+                    {make.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -227,8 +226,8 @@ export function FilterModal({
               <SelectContent>
                 <SelectItem value="any">Any model</SelectItem>
                 {modelOptions.map((model) => (
-                  <SelectItem key={model} value={model}>
-                    {model}
+                  <SelectItem key={model.value} value={model.value}>
+                    {model.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -247,9 +246,9 @@ export function FilterModal({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any">Any</SelectItem>
-                {BODY_TYPES.map((body) => (
-                  <SelectItem key={body} value={body}>
-                    {body}
+                {searchOptions?.bodyTypes.map((body) => (
+                  <SelectItem key={body.value} value={body.value}>
+                    {body.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -324,9 +323,9 @@ export function FilterModal({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any">Any</SelectItem>
-                {FUEL_TYPES.map((fuel) => (
-                  <SelectItem key={fuel} value={fuel}>
-                    {fuel}
+                {searchOptions?.fuelTypes.map((fuel) => (
+                  <SelectItem key={fuel.value} value={fuel.value}>
+                    {fuel.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -349,9 +348,9 @@ export function FilterModal({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any">Any</SelectItem>
-                {TRANSMISSION_OPTIONS.map((transmission) => (
-                  <SelectItem key={transmission} value={transmission}>
-                    {transmission}
+                {searchOptions?.transmissionTypes.map((transmission) => (
+                  <SelectItem key={transmission.value} value={transmission.value}>
+                    {transmission.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -388,9 +387,11 @@ export function FilterModal({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any">Any</SelectItem>
-                {DOOR_OPTIONS.map((door) => (
-                  <SelectItem key={door} value={String(door)}>
-                    {door}
+                {searchOptions?.doors
+                  .filter((door) => door.value !== "any")
+                  .map((door) => (
+                  <SelectItem key={door.value} value={door.value}>
+                    {door.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -409,9 +410,11 @@ export function FilterModal({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any">Any</SelectItem>
-                {SEAT_OPTIONS.map((seat) => (
-                  <SelectItem key={seat} value={String(seat)}>
-                    {seat}
+                {searchOptions?.seats
+                  .filter((seat) => seat.value !== "any")
+                  .map((seat) => (
+                  <SelectItem key={seat.value} value={seat.value}>
+                    {seat.label}
                   </SelectItem>
                 ))}
               </SelectContent>

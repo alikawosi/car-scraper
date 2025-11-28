@@ -17,6 +17,20 @@ function SearchContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentCriteria, setCurrentCriteria] = useState<SearchCriteria>({});
+  const [searchOptions, setSearchOptions] = useState<any>(null); // Using any for now to avoid import cycle or complex types, will fix types later
+
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const searchService = SearchService.getInstance();
+        const options = await searchService.getSearchOptions();
+        setSearchOptions(options);
+      } catch (err) {
+        console.error("Failed to fetch search options", err);
+      }
+    };
+    fetchOptions();
+  }, []);
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -157,6 +171,7 @@ function SearchContent() {
       <FilterBar 
         currentCriteria={currentCriteria} 
         onApplyFilters={handleApplyFilters} 
+        searchOptions={searchOptions}
       />
 
       <div className="flex items-center justify-between">

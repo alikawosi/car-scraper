@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   SlidersHorizontal,
@@ -21,19 +21,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CAR_MAKES, getModelsForMake } from "@/lib/car-data";
-import type { SearchCriteria, Website } from "@/lib/types";
+import type { SearchCriteria, Website, SearchOptions } from "@/lib/types";
+import { SearchService } from "@/lib/services/search-service";
 import {
-  BODY_TYPES,
-  DOOR_OPTIONS,
-  FUEL_TYPES,
-  MILEAGE_OPTIONS,
   PRICE_OPTIONS,
   RADIUS_OPTIONS,
-  SEAT_OPTIONS,
   SORT_OPTIONS,
-  TRANSMISSION_OPTIONS,
   YEAR_OPTIONS,
+  MILEAGE_OPTIONS,
 } from "@/lib/constants";
 
 const DEFAULT_CRITERIA: SearchCriteria = {
@@ -57,11 +52,29 @@ export default function HomePage() {
     ...DEFAULT_CRITERIA,
   });
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [searchOptions, setSearchOptions] = useState<SearchOptions | null>(null);
 
-  const modelOptions = useMemo(
-    () => getModelsForMake(criteria.make),
-    [criteria.make]
-  );
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const options = await SearchService.getInstance().getSearchOptions();
+        setSearchOptions(options);
+      } catch (error) {
+        console.error("Failed to fetch search options:", error);
+      }
+    };
+    fetchOptions();
+  }, []);
+
+  const modelOptions = useMemo(() => {
+    if (!searchOptions?.models) return [];
+    if (!criteria.make) return [];
+    
+    const selectedMakeOption = searchOptions.makes.find(m => m.value === criteria.make);
+    if (!selectedMakeOption?.id) return [];
+
+    return searchOptions.models.filter(model => model.make_id === selectedMakeOption.id);
+  }, [criteria.make, searchOptions]);
 
   const handleInput =
     (field: keyof SearchCriteria) =>
@@ -284,9 +297,9 @@ export default function HomePage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="any">Any make</SelectItem>
-                    {CAR_MAKES.map((make) => (
-                      <SelectItem key={make} value={make}>
-                        {make}
+                    {searchOptions?.makes.map((make) => (
+                      <SelectItem key={make.value} value={make.value}>
+                        {make.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -324,8 +337,8 @@ export default function HomePage() {
                   <SelectContent>
                     <SelectItem value="any">Any model</SelectItem>
                     {modelOptions.map((model) => (
-                      <SelectItem key={model} value={model}>
-                        {model}
+                      <SelectItem key={model.value} value={model.value}>
+                        {model.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -405,9 +418,9 @@ export default function HomePage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="any">Any</SelectItem>
-                      {BODY_TYPES.map((body) => (
-                        <SelectItem key={body} value={body}>
-                          {body}
+                      {searchOptions?.bodyTypes.map((body) => (
+                        <SelectItem key={body.value} value={body.value}>
+                          {body.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -577,9 +590,9 @@ export default function HomePage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="any">Any</SelectItem>
-                      {FUEL_TYPES.map((fuel) => (
-                        <SelectItem key={fuel} value={fuel}>
-                          {fuel}
+                      {searchOptions?.fuelTypes.map((fuel) => (
+                        <SelectItem key={fuel.value} value={fuel.value}>
+                          {fuel.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -600,9 +613,9 @@ export default function HomePage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="any">Any</SelectItem>
-                      {TRANSMISSION_OPTIONS.map((transmission) => (
-                        <SelectItem key={transmission} value={transmission}>
-                          {transmission}
+                      {searchOptions?.transmissionTypes.map((transmission) => (
+                        <SelectItem key={transmission.value} value={transmission.value}>
+                          {transmission.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -635,9 +648,11 @@ export default function HomePage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="any">Any</SelectItem>
-                      {DOOR_OPTIONS.map((door) => (
-                        <SelectItem key={door} value={String(door)}>
-                          {door}
+                      {searchOptions?.doors
+                        .filter((door) => door.value !== "any")
+                        .map((door) => (
+                        <SelectItem key={door.value} value={String(door.value)}>
+                          {door.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -654,9 +669,11 @@ export default function HomePage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="any">Any</SelectItem>
-                      {SEAT_OPTIONS.map((seat) => (
-                        <SelectItem key={seat} value={String(seat)}>
-                          {seat}
+                      {searchOptions?.seats
+                        .filter((seat) => seat.value !== "any")
+                        .map((seat) => (
+                        <SelectItem key={seat.value} value={String(seat.value)}>
+                          {seat.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
