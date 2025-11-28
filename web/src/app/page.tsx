@@ -3,6 +3,9 @@
 import Image from "next/image";
 import { FormEvent, useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { createClient } from "@/utils/supabase/client";
+import { signout } from "@/app/auth/actions";
 import {
   SlidersHorizontal,
   Heart,
@@ -53,6 +56,18 @@ export default function HomePage() {
   });
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [searchOptions, setSearchOptions] = useState<SearchOptions | null>(null);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, []);
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -195,10 +210,23 @@ export default function HomePage() {
               <Heart className="w-5 h-5" />
               <span className="text-[10px]">Saved</span>
             </div>
-            <div className="flex flex-col items-center gap-1 hover:text-[#E60012] cursor-pointer transition-colors">
-              <User className="w-5 h-5" />
-              <span className="text-[10px]">Sign In</span>
-            </div>
+            {user ? (
+              <Link
+                href="/dashboard"
+                className="flex flex-col items-center gap-1 hover:text-[#E60012] cursor-pointer transition-colors"
+              >
+                <User className="w-5 h-5" />
+                <span className="text-[10px]">Dashboard</span>
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className="flex flex-col items-center gap-1 hover:text-[#E60012] cursor-pointer transition-colors"
+              >
+                <User className="w-5 h-5" />
+                <span className="text-[10px]">Sign In</span>
+              </Link>
+            )}
             <div className="md:hidden">
               <Menu className="w-6 h-6" />
             </div>
