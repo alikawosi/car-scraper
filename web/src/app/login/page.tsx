@@ -1,17 +1,18 @@
 'use client'
 
-import { login, verifyOtp } from '../auth/actions'
+import { login, verifyOtp, signInWithPassword } from '../auth/actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useState, useEffect, useRef } from 'react'
-import { Edit2, RefreshCw, Loader2 } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Edit2, RefreshCw, Loader2, KeyRound, Mail } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [token, setToken] = useState('')
-  const [step, setStep] = useState<'email' | 'otp'>('email')
+  const [password, setPassword] = useState('')
+  const [step, setStep] = useState<'email' | 'otp' | 'password'>('email')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [timeLeft, setTimeLeft] = useState(0)
@@ -43,6 +44,17 @@ export default function LoginPage() {
     } else {
       setStep('otp')
       startTimer()
+    }
+  }
+
+  const handlePasswordLogin = async (formData: FormData) => {
+    setLoading(true)
+    setError('')
+    const result = await signInWithPassword(formData)
+    setLoading(false)
+
+    if (result?.error) {
+      setError(result.error)
     }
   }
 
@@ -79,8 +91,24 @@ export default function LoginPage() {
   const handleEditEmail = () => {
     setStep('email')
     setToken('')
+    setPassword('')
     setError('')
     setTimeLeft(0)
+  }
+
+  const toggleAuthMethod = () => {
+    setError('')
+    if (step === 'password') {
+      setStep('email')
+    } else {
+      setStep('password')
+    }
+  }
+
+  const getFormAction = () => {
+    if (step === 'password') return handlePasswordLogin
+    if (step === 'otp') return handleVerifyOtp
+    return handleSendOtp
   }
 
   return (
@@ -88,18 +116,18 @@ export default function LoginPage() {
       <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-2xl shadow-xl transition-all duration-300">
         <div>
           <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-slate-900">
-            {step === 'email' ? 'Sign in or Sign up' : 'Verify your email'}
+            {step === 'otp' ? 'Verify your email' : (step === 'password' ? 'Sign in with password' : 'Sign in or Sign up')}
           </h2>
           <p className="mt-2 text-center text-sm text-slate-600">
-            {step === 'email' 
-              ? 'Enter your email to receive a verification code' 
-              : `We sent a code to ${email}`}
+            {step === 'otp' 
+              ? `We sent a code to ${email}`
+              : (step === 'password' ? 'Enter your password to sign in' : 'Enter your email to receive a verification code')}
           </p>
         </div>
 
         <form 
           className="mt-8 space-y-6" 
-          action={step === 'email' ? handleSendOtp : handleVerifyOtp}
+          action={getFormAction()}
         >
           <div className="space-y-4">
             {/* Email Input */}
@@ -133,6 +161,24 @@ export default function LoginPage() {
                 )}
               </div>
             </div>
+
+            {/* Password Input */}
+            {step === 'password' && (
+              <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-300">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="relative block w-full rounded-md border-0 py-1.5 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-[#E60012] sm:text-sm sm:leading-6"
+                  placeholder="Enter your password"
+                  autoFocus
+                />
+              </div>
+            )}
 
             {/* OTP Input Section */}
             {step === 'otp' && (
@@ -182,7 +228,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          <div>
+          <div className="space-y-4">
             <Button
               type="submit"
               disabled={loading}
@@ -191,12 +237,32 @@ export default function LoginPage() {
               {loading ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  {step === 'email' ? 'Sending...' : 'Verifying...'}
+                  Signing in...
                 </span>
               ) : (
-                step === 'email' ? 'Send Code' : 'Verify & Login'
+                'Sign In'
               )}
             </Button>
+
+            {step !== 'otp' && (
+              <button
+                type="button"
+                onClick={toggleAuthMethod}
+                className="w-full flex items-center justify-center gap-2 text-sm text-slate-600 hover:text-[#E60012] transition-colors"
+              >
+                {step === 'password' ? (
+                  <>
+                    <Mail className="w-4 h-4" />
+                    Sign in with OTP
+                  </>
+                ) : (
+                  <>
+                    <KeyRound className="w-4 h-4" />
+                    Sign in with password
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </form>
       </div>
