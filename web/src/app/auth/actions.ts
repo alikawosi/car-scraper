@@ -97,6 +97,21 @@ export async function signout() {
   redirect('/login')
 }
 
+export async function resetPassword(formData: FormData) {
+  const supabase = await createClient()
+  const email = formData.get('email') as string
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/auth/callback?next=/auth/update-password`,
+  })
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  return { success: true }
+}
+
 export async function updatePassword(formData: FormData) {
   const supabase = await createClient()
   const password = formData.get('password') as string
@@ -109,5 +124,6 @@ export async function updatePassword(formData: FormData) {
     return { error: error.message }
   }
 
-  return { success: true }
+  revalidatePath('/', 'layout')
+  redirect('/dashboard')
 }
