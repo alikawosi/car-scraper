@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { AlertTriangle, X } from 'lucide-react'
+import { AlertTriangle, X, Shield } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -38,32 +38,35 @@ export function PasswordBanner({ hasPassword }: { hasPassword: boolean }) {
   }
 
   return (
-    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-lg relative animate-in fade-in slide-in-from-top-2">
+    <div className="bg-gradient-to-r from-orange-50 to-white border border-orange-100 p-4 mb-6 rounded-xl relative shadow-sm animate-in fade-in slide-in-from-top-2">
       <div className="flex items-start">
-        <div className="flex-shrink-0">
-          <AlertTriangle className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+        <div className="flex-shrink-0 bg-white p-2 rounded-full shadow-sm">
+          <Shield className="h-6 w-6 text-motovotive-orange" aria-hidden="true" />
         </div>
-        <div className="ml-3 flex-1 md:flex md:justify-between">
-          <p className="text-sm text-yellow-700">
-            Your account is currently using a temporary login method. Set a password to secure your account.
-          </p>
-          <p className="mt-3 text-sm md:ml-6 md:mt-0">
+        <div className="ml-4 flex-1 md:flex md:justify-between items-center">
+          <div>
+             <h3 className="text-sm font-bold text-slate-900 font-display uppercase tracking-wide">Secure Your Account</h3>
+             <p className="text-sm text-slate-600 mt-1">
+               Your account is currently using a temporary login method. Set a password to enable secure login.
+             </p>
+          </div>
+          <div className="mt-3 md:ml-6 md:mt-0">
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
               <DialogTrigger asChild>
-                <button className="whitespace-nowrap font-medium text-yellow-700 hover:text-yellow-600 underline">
+                <Button variant="default" className="whitespace-nowrap bg-motovotive-orange hover:bg-motovotive-red border-none shadow-orange-500/20 shadow-lg text-white font-bold rounded-full text-xs h-9 px-6">
                   Set Password
-                </button>
+                </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="rounded-2xl border-none shadow-2xl">
                 <DialogHeader>
-                  <DialogTitle>Set Account Password</DialogTitle>
+                  <DialogTitle className="font-display text-2xl font-bold">Set Account Password</DialogTitle>
                   <DialogDescription>
                     Create a strong password to secure your account and enable password login.
                   </DialogDescription>
                 </DialogHeader>
-                <form action={handleUpdatePassword} className="space-y-4 mt-4">
+                <form action={handleUpdatePassword} className="space-y-5 mt-4">
                   <div className="space-y-2">
-                    <Label htmlFor="password">New Password</Label>
+                    <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">New Password</Label>
                     <Input
                       id="password"
                       name="password"
@@ -71,28 +74,29 @@ export function PasswordBanner({ hasPassword }: { hasPassword: boolean }) {
                       required
                       minLength={6}
                       placeholder="Enter new password"
+                      className="rounded-xl border-slate-200 focus:ring-motovotive-orange"
                     />
                   </div>
                   {error && (
-                    <p className="text-sm text-red-600">{error}</p>
+                    <p className="text-sm text-red-600 font-medium bg-red-50 p-2 rounded-lg">{error}</p>
                   )}
-                  <div className="flex justify-end gap-3">
-                    <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
+                  <div className="flex justify-end gap-3 pt-2">
+                    <Button type="button" variant="ghost" onClick={() => setIsOpen(false)} className="rounded-full">
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={loading}>
+                    <Button type="submit" disabled={loading} className="rounded-full bg-motovotive-orange hover:bg-motovotive-red border-none">
                       {loading ? 'Saving...' : 'Save Password'}
                     </Button>
                   </div>
                 </form>
               </DialogContent>
             </Dialog>
-          </p>
+          </div>
         </div>
         <div className="ml-4 flex-shrink-0 flex">
           <button
             type="button"
-            className="bg-yellow-50 rounded-md inline-flex text-yellow-500 hover:text-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+            className="rounded-full p-1 inline-flex text-slate-400 hover:text-slate-500 hover:bg-slate-100 transition-colors"
             onClick={() => setIsVisible(false)}
           >
             <span className="sr-only">Dismiss</span>

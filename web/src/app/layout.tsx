@@ -1,35 +1,44 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next'
+import { Inter, Outfit, JetBrains_Mono } from 'next/font/google'
+import './globals.css'
+import { Toaster } from 'sonner'
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const outfit = Outfit({
+  subsets: ['latin'],
+  variable: '--font-outfit',
+  display: 'swap',
+  weight: ['600', '700', '800', '900'],
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains-mono',
+  display: 'swap',
+  weight: ['400', '500', '700'],
+})
 
 export const metadata: Metadata = {
-  title: "AutoTrader live scraper",
-  description:
-    "Headless AutoTrader scraping with OpenAI valuations and number plate extraction.",
-};
+  title: 'Motovotive - Motion You Can Trust',
+  description: 'AI-Powered Car Search. Made for Motion. Built with Motivation.',
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground`}
-      >
+    <html lang="en" className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable}`}>
+      <body className="font-sans antialiased min-h-screen bg-background">
         {children}
+        <Toaster />
       </body>
     </html>
-  );
+  )
 }

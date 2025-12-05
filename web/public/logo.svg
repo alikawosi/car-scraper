@@ -1,0 +1,21 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="motovotive-arrow-gradient" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#151414" />
+        <stop offset="60%" stop-color="#D1D1D1" />
+        <stop offset="100%" stop-color="#D1D1D1" stop-opacity="0" />
+    </linearGradient>
+
+    <pattern id="motovotive-white-dot-pattern" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
+      <circle cx="6" cy="6" r="3" fill="white" />
+    </pattern>
+    
+    <mask id="motovotive-dotted-arrow-mask">
+      <path d="M 30 40 H 70 L 150 120 L 70 200 H 30 L 110 120 Z" fill="url(#motovotive-white-dot-pattern)" />
+    </mask>
+  </defs>
+  
+  <rect x="0" y="0" width="240" height="240" fill="url(#motovotive-arrow-gradient)" mask="url(#motovotive-dotted-arrow-mask)" />
+  
+  <path d="M 90 40 H 130 L 210 120 L 130 200 H 90 L 170 120 Z" fill="#EF4444" />
+</svg>

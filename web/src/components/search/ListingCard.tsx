@@ -1,3 +1,4 @@
+
 import { memo, useMemo } from "react";
 import Image from "next/image";
 import { Heart, MapPin, ScanEye } from "lucide-react";
@@ -19,12 +20,12 @@ export const ListingCard = memo(function ListingCard({ listing, className }: Lis
   return (
     <div
       className={cn(
-        "group flex flex-col rounded-2xl bg-white shadow-sm border border-slate-100 hover:shadow-md transition-all overflow-hidden h-full relative",
+        "group flex flex-col rounded-xl bg-card shadow-sm border border-border hover:shadow-lg transition-all overflow-hidden h-full relative hover-lift",
         className
       )}
     >
       {/* Image Section */}
-      <div className="relative aspect-[4/3] bg-slate-100 overflow-hidden">
+      <div className="relative aspect-[4/3] bg-muted overflow-hidden">
         {viewModel.imageUrl ? (
           <Image
             src={viewModel.imageUrl}
@@ -37,7 +38,7 @@ export const ListingCard = memo(function ListingCard({ listing, className }: Lis
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
           />
         ) : (
-          <div className="flex items-center justify-center h-full text-slate-400 bg-slate-50">
+          <div className="flex items-center justify-center h-full text-muted-foreground bg-secondary/50">
             <span className="text-xs font-medium">No Image</span>
           </div>
         )}
@@ -55,19 +56,19 @@ export const ListingCard = memo(function ListingCard({ listing, className }: Lis
         {/* Seller Badge */}
         {viewModel.sellerType && (
           <div className="absolute top-3 left-3">
-            <span className="bg-white/90 backdrop-blur-sm px-2 py-1 text-[10px] font-bold uppercase tracking-wider rounded text-slate-700 shadow-sm border border-white/50">
+            <span className="bg-white/90 backdrop-blur-sm px-2 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md text-motovotive-carbon-black shadow-sm border border-white/50 font-display">
               {viewModel.sellerType}
             </span>
           </div>
         )}
 
         {/* Heart Button */}
-        <button className="absolute top-3 right-3 p-2 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white text-slate-400 hover:text-red-500 transition-colors shadow-sm">
+        <button className="absolute top-3 right-3 p-2 rounded-full bg-white/90 backdrop-blur-sm hover:bg-white text-muted-foreground hover:text-motovotive-red transition-colors shadow-sm">
           <Heart className="w-4 h-4" />
         </button>
 
         {/* Image Count (Mock) */}
-        <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-[2px] text-white text-[10px] px-1.5 py-0.5 rounded font-medium">
+        <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-[2px] text-white text-[10px] px-1.5 py-0.5 rounded font-medium font-mono">
           1/1
         </div>
       </div>
@@ -76,14 +77,14 @@ export const ListingCard = memo(function ListingCard({ listing, className }: Lis
       <div className="p-4 flex flex-col flex-1 gap-3">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <span className="text-[10px] font-bold text-motovotive-red uppercase tracking-wider font-display">
               {viewModel.website}
             </span>
           </div>
-          <h3 className="font-bold text-lg text-slate-900 line-clamp-1 leading-tight">
+          <h3 className="font-bold text-lg text-foreground line-clamp-1 leading-tight font-display group-hover:text-motovotive-red transition-colors">
             {viewModel.title}
           </h3>
-          <p className="text-sm text-slate-500 line-clamp-1 mt-0.5">
+          <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5 font-sans">
             {viewModel.subtitle}
           </p>
         </div>
@@ -92,10 +93,10 @@ export const ListingCard = memo(function ListingCard({ listing, className }: Lis
         <div className="flex flex-wrap gap-2 min-h-[24px]">
           {isAnalyzing ? (
             <div className="flex items-center gap-2 w-full">
-              <div className="h-1.5 flex-1 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full bg-[#E60012] w-2/3 animate-[shimmer_1s_infinite]" />
+              <div className="h-1.5 flex-1 bg-secondary rounded-full overflow-hidden">
+                <div className="h-full bg-motovotive-red w-2/3 animate-[shimmer_1s_infinite]" />
               </div>
-              <span className="text-[10px] font-medium text-slate-400 animate-pulse">
+              <span className="text-[10px] font-medium text-muted-foreground animate-pulse font-mono">
                 Valuating...
               </span>
             </div>
@@ -103,23 +104,14 @@ export const ListingCard = memo(function ListingCard({ listing, className }: Lis
             <>
               {rating && (
                 <Badge
-                  variant="secondary"
-                  className={cn(
-                    "rounded-md text-[10px] font-bold uppercase tracking-wide border-0",
-                    rating.type === "great"
-                      ? "bg-emerald-100 text-emerald-800"
-                      : rating.type === "good"
-                      ? "bg-green-100 text-green-800"
-                      : rating.type === "fair"
-                      ? "bg-blue-100 text-blue-800"
-                      : "bg-orange-100 text-orange-800"
-                  )}
+                  variant={rating.type === "great" ? "success" : rating.type === "good" ? "success" : rating.type === "fair" ? "info" : "warning"}
+                  className="rounded-md text-[10px] font-bold uppercase tracking-wide border-0"
                 >
                   {rating.label}
                 </Badge>
               )}
               {viewModel.mileage && (
-                <span className="bg-slate-100 text-slate-600 px-2 py-1 rounded-md text-[11px] font-bold border border-slate-200">
+                <span className="bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-[11px] font-bold border border-border font-mono">
                   {viewModel.mileage}
                 </span>
               )}
@@ -128,12 +120,12 @@ export const ListingCard = memo(function ListingCard({ listing, className }: Lis
         </div>
 
         {/* Price */}
-        <div className="mt-auto pt-3 border-t border-slate-50 flex items-end justify-between">
+        <div className="mt-auto pt-3 border-t border-border flex items-end justify-between">
           <div className="flex flex-col">
-            <span className="text-2xl font-bold text-slate-900 leading-none">
+            <span className="text-2xl font-bold text-foreground leading-none font-display">
               {viewModel.price}
             </span>
-            <span className="text-xs text-slate-400 mt-1 h-4 block">
+            <span className="text-xs text-muted-foreground mt-1 h-4 block font-mono">
               {isAnalyzing ? (
                 <span className="animate-pulse">Checking market...</span>
               ) : (
@@ -143,7 +135,7 @@ export const ListingCard = memo(function ListingCard({ listing, className }: Lis
           </div>
 
           {viewModel.location && (
-            <div className="flex items-center gap-1 text-xs text-slate-500 mb-1">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground mb-1 font-sans">
               <MapPin className="w-3 h-3" />
               <span className="truncate max-w-[80px]">
                 {viewModel.location}
@@ -156,7 +148,7 @@ export const ListingCard = memo(function ListingCard({ listing, className }: Lis
           href={viewModel.link}
           target="_blank"
           rel="noreferrer"
-          className="text-xs font-medium text-center w-full py-2 rounded-lg bg-slate-50 text-slate-600 hover:bg-[#E60012] hover:text-white transition-colors"
+          className="text-xs font-bold text-center w-full py-2.5 rounded-lg bg-secondary text-secondary-foreground hover:bg-motovotive-red hover:text-white transition-all duration-200 uppercase tracking-wide font-display"
         >
           View Details
         </a>

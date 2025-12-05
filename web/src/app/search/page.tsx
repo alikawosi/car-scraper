@@ -17,6 +17,7 @@ function SearchContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentCriteria, setCurrentCriteria] = useState<SearchCriteria>({});
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [searchOptions, setSearchOptions] = useState<any>(null); // Using any for now to avoid import cycle or complex types, will fix types later
 
   useEffect(() => {
@@ -91,9 +92,9 @@ function SearchContent() {
   if (loading && listings.length === 0) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center">
-        <Loader2 className="w-12 h-12 animate-spin text-[#E60012]" />
-        <p className="mt-4 text-slate-500 font-medium">
-          Scraping marketplaces...
+        <Loader2 className="w-12 h-12 animate-spin text-motovotive-red" />
+        <p className="mt-4 text-slate-500 font-medium font-mono animate-pulse">
+          SCANNING MARKETPLACE...
         </p>
       </div>
     );
@@ -102,13 +103,13 @@ function SearchContent() {
   if (error) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center">
-        <div className="bg-red-50 p-6 rounded-full mb-4">
+        <div className="bg-red-50 p-6 rounded-full mb-4 animate-bounce">
           <span className="text-3xl">⚠️</span>
         </div>
-        <h2 className="text-xl font-bold text-slate-900">
+        <h2 className="text-xl font-bold text-slate-900 font-display">
           Something went wrong
         </h2>
-        <p className="text-slate-500 mt-2">{error}</p>
+        <p className="text-slate-500 mt-2 max-w-md">{error}</p>
       </div>
     );
   }
@@ -127,10 +128,10 @@ function SearchContent() {
   if (!loading && listings.length === 0) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
-        <div className="bg-slate-100 p-6 rounded-full mb-6">
+        <div className="bg-gradient-to-br from-slate-100 to-slate-200 p-6 rounded-full mb-6 shadow-inner">
           <Search className="w-10 h-10 text-slate-400" />
         </div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">
+        <h2 className="text-3xl font-bold text-slate-900 mb-2 font-display">
           No results found
         </h2>
         <p className="text-slate-500 mb-8 max-w-md">
@@ -141,21 +142,21 @@ function SearchContent() {
           <Button 
             variant="outline" 
             onClick={() => handleRecommendedSearch("BMW", "3 Series")}
-            className="hover:border-[#E60012] hover:text-[#E60012]"
+            className="hover:border-motovotive-red hover:text-motovotive-red rounded-full px-6 font-bold"
           >
             BMW 3 Series
           </Button>
           <Button 
             variant="outline" 
             onClick={() => handleRecommendedSearch("Audi", "A3")}
-            className="hover:border-[#E60012] hover:text-[#E60012]"
+            className="hover:border-motovotive-red hover:text-motovotive-red rounded-full px-6 font-bold"
           >
             Audi A3
           </Button>
           <Button 
             variant="outline" 
             onClick={() => handleRecommendedSearch("Mercedes-Benz", "C Class")}
-            className="hover:border-[#E60012] hover:text-[#E60012]"
+            className="hover:border-motovotive-red hover:text-motovotive-red rounded-full px-6 font-bold"
           >
             Mercedes-Benz C Class
           </Button>
@@ -177,7 +178,7 @@ function SearchContent() {
       <div className="flex items-center justify-between">
         {/* Removed Result Count */}
         <div /> 
-        <span className="text-sm text-slate-500">Sorted by Relevance</span>
+        <span className="text-xs font-bold text-slate-500 uppercase tracking-widest font-display">Sorted by Relevance</span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -192,21 +193,21 @@ function SearchContent() {
             variant="outline"
             onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
             disabled={currentPage <= 1 || loading}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 rounded-full hover:bg-slate-100 hover:text-motovotive-red"
           >
             <ChevronLeft className="w-4 h-4" />
             Previous
           </Button>
           
-          <span className="text-sm font-medium text-slate-600">
-              Page {currentPage}
+          <span className="text-base font-bold text-slate-900 font-mono">
+              {currentPage}
           </span>
 
           <Button
             variant="outline"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={loading || listings.length === 0} // Disable next if no results (or maybe we reached end)
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 rounded-full hover:bg-slate-100 hover:text-motovotive-red"
           >
             Next
             <ChevronRight className="w-4 h-4" />
@@ -218,51 +219,59 @@ function SearchContent() {
 
 export default function SearchPage() {
   return (
-    <div className="min-h-screen bg-slate-50 pb-12 font-sans">
+    <div className="min-h-screen bg-slate-50 pb-12 font-sans selection:bg-motovotive-red selection:text-white">
       {/* Header */}
-      <nav className="bg-white border-b sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-8">
+      <nav className="bg-white/80 backdrop-blur-md border-b sticky top-0 z-50">
+        <div className="container mx-auto px-4 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-12">
             <Link
               href="/"
-              className="text-2xl font-bold text-[#E60012] tracking-tighter"
+              className="flex items-center gap-1 group"
             >
-              AutoTrader
+              <span className="text-2xl font-black text-motovotive-red tracking-tighter transition-all duration-300 group-hover:tracking-normal">
+                MOTOVOTIVE
+              </span>
+              <div className="w-2.5 h-2.5 rounded-full bg-motovotive-orange mt-2 animate-pulse" />
             </Link>
-            <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-              <Link href="/" className="hover:text-[#E60012]">
+            <div className="hidden md:flex items-center gap-8 text-sm font-bold text-slate-600 font-display uppercase tracking-wider">
+              <Link href="/" className="hover:text-motovotive-red transition-colors relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-0 after:h-0.5 after:bg-motovotive-red after:transition-all hover:after:w-full">
                 Home
               </Link>
-              <span className="text-slate-900 font-semibold">Used cars</span>
-              <Link href="#" className="hover:text-[#E60012]">
+              <span className="text-motovotive-red cursor-default">Used cars</span>
+              <Link href="#" className="hover:text-motovotive-red transition-colors relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-0 after:h-0.5 after:bg-motovotive-red after:transition-all hover:after:w-full">
                 New cars
               </Link>
-              <Link href="#" className="hover:text-[#E60012]">
+              <Link href="#" className="hover:text-motovotive-red transition-colors relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-0 after:h-0.5 after:bg-motovotive-red after:transition-all hover:after:w-full">
                 Sell
               </Link>
-              <Link href="#" className="hover:text-[#E60012]">
+              <Link href="#" className="hover:text-motovotive-red transition-colors relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-0 after:h-0.5 after:bg-motovotive-red after:transition-all hover:after:w-full">
                 Valuation
               </Link>
             </div>
           </div>
           <div className="flex items-center gap-6 text-sm font-medium text-slate-600">
-            <div className="flex flex-col items-center gap-1 hover:text-[#E60012] cursor-pointer transition-colors">
-              <Heart className="w-5 h-5" />
-              <span className="text-[10px]">Saved</span>
+            <div className="hidden sm:flex flex-col items-center gap-0.5 hover:text-motovotive-red cursor-pointer transition-colors group">
+              <Heart className="w-5 h-5 group-hover:fill-current group-hover:animate-pulse" />
+              <span className="text-[10px] font-bold uppercase tracking-wide">Saved</span>
             </div>
-            <div className="flex flex-col items-center gap-1 hover:text-[#E60012] cursor-pointer transition-colors">
+            <Link href="/login" className="flex flex-col items-center gap-0.5 hover:text-motovotive-red cursor-pointer transition-colors group">
               <User className="w-5 h-5" />
-              <span className="text-[10px]">Sign In</span>
-            </div>
+              <span className="text-[10px] font-bold uppercase tracking-wide">Sign In</span>
+            </Link>
             <div className="md:hidden">
-              <Menu className="w-6 h-6" />
+              <Menu className="w-6 h-6 hover:text-motovotive-red cursor-pointer" />
             </div>
           </div>
         </div>
       </nav>
 
       <main className="container mx-auto px-4 py-8">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={
+          <div className="min-h-[60vh] flex flex-col items-center justify-center">
+            <Loader2 className="w-12 h-12 animate-spin text-motovotive-red" />
+            <p className="mt-4 text-slate-500 font-medium font-mono">LOADING...</p>
+          </div>
+        }>
           <SearchContent />
         </Suspense>
       </main>

@@ -1,7 +1,9 @@
 "use client";
 
+
 import Image from "next/image";
 import { FormEvent, useMemo, useState, useEffect } from "react";
+import { HeroCarCards } from "@/components/landing/HeroCarCards";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
@@ -14,6 +16,7 @@ import {
   Search,
 } from "lucide-react";
 
+import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -172,144 +175,200 @@ export default function HomePage() {
     setShowAdvanced(false);
   };
 
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-slate-50 pb-12 font-sans">
+    <div className="min-h-screen bg-neutral-50 pb-12 font-sans selection:bg-motovotive-red selection:text-white">
       {/* Header */}
-      <nav className="bg-white border-b sticky top-0 z-50">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <a
-              href="#"
-              className="text-2xl font-bold text-[#E60012] tracking-tighter"
+      <nav 
+        className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 border-b ${
+          isScrolled 
+            ? "bg-white/80 backdrop-blur-md border-slate-200/50 h-20 shadow-sm" 
+            : "bg-transparent border-transparent h-24"
+        }`}
+      >
+        <div className="container mx-auto px-4 h-full flex items-center justify-between">
+          <div className="flex items-center gap-12">
+            <Link
+              href="/"
+              className="flex items-center gap-3 group"
             >
-              AutoTrader
-            </a>
-            <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
-              <a href="#" className="text-slate-900 font-semibold">
-                Cars
+              <Logo size={40} className="text-motovotive-red transition-transform duration-300 group-hover:scale-110" />
+              <span className={`text-2xl font-black italic tracking-tighter ${isScrolled ? "text-slate-900" : "text-slate-900"} transition-colors`}>
+                MOTOVOTIVE
+              </span>
+            </Link>
+            <div className={`hidden md:flex items-center gap-8 text-sm font-semibold transition-colors ${isScrolled ? "text-muted-foreground" : "text-slate-600"}`}>
+              <a href="#" className="hover:text-motovotive-red transition-colors">
+                Search
               </a>
-              <a href="#" className="hover:text-[#E60012] transition-colors">
-                Vans
+              <a href="#" className="hover:text-motovotive-red transition-colors">
+                Sell
               </a>
-              <a href="#" className="hover:text-[#E60012] transition-colors">
-                Bikes
+              <a href="#" className="hover:text-motovotive-red transition-colors">
+                Valuation
               </a>
-              <a href="#" className="hover:text-[#E60012] transition-colors">
-                Motorhomes
-              </a>
-              <a href="#" className="hover:text-[#E60012] transition-colors">
-                Caravans
-              </a>
-              <a href="#" className="hover:text-[#E60012] transition-colors">
-                Trucks
+              <a href="#" className="hover:text-motovotive-red transition-colors">
+                Reviews
               </a>
             </div>
           </div>
-          <div className="flex items-center gap-6 text-sm font-medium text-slate-600">
-            <div className="flex flex-col items-center gap-1 hover:text-[#E60012] cursor-pointer transition-colors">
-              <Heart className="w-5 h-5" />
-              <span className="text-[10px]">Saved</span>
+          <div className={`flex items-center gap-6 text-sm font-medium transition-colors ${isScrolled ? "text-muted-foreground" : "text-slate-600"}`}>
+            <div className="flex flex-col items-center gap-1 hover:text-motovotive-red cursor-pointer transition-colors group">
+              <Heart className="w-5 h-5 group-hover:scale-110 transition-transform" />
             </div>
             {user ? (
               <Link
                 href="/dashboard"
-                className="flex flex-col items-center gap-1 hover:text-[#E60012] cursor-pointer transition-colors"
+                className="flex items-center gap-2 hover:text-motovotive-red cursor-pointer transition-colors"
               >
-                <User className="w-5 h-5" />
-                <span className="text-[10px]">Dashboard</span>
+                <div className="flex flex-col items-center gap-1 group">
+                  <User className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                </div>
               </Link>
             ) : (
-              <Link
-                href="/login"
-                className="flex flex-col items-center gap-1 hover:text-[#E60012] cursor-pointer transition-colors"
-              >
-                <User className="w-5 h-5" />
-                <span className="text-[10px]">Sign In</span>
+              <Link href="/login">
+                <Button className="bg-motovotive-red hover:bg-red-600 text-white font-bold rounded-full px-6 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                  Log in
+                </Button>
               </Link>
             )}
             <div className="md:hidden">
-              <Menu className="w-6 h-6" />
+              <Button variant="ghost" size="icon">
+                <Menu className="w-6 h-6" />
+              </Button>
             </div>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="bg-[#E60012] text-white relative overflow-hidden min-h-[500px] flex items-center">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-multiply pointer-events-none"></div>
-        <div className="container mx-auto px-4 py-12 md:py-20 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="space-y-6 max-w-xl flex-1">
-            <div className="inline-block bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 text-sm font-bold uppercase tracking-wider shadow-sm">
-              New Arrival
+      {/* Hero Section */}
+      <section 
+        className="relative overflow-hidden min-h-[600px] flex items-center bg-gradient-to-b from-slate-50 via-white to-slate-50"
+        onMouseMove={(e) => {
+          const { left, top } = e.currentTarget.getBoundingClientRect();
+          const x = e.clientX - left;
+          const y = e.clientY - top;
+          e.currentTarget.style.setProperty("--x", `${x}px`);
+          e.currentTarget.style.setProperty("--y", `${y}px`);
+        }}
+      >
+        
+        {/* Mouse Glow Effect */}
+        <div 
+          className="pointer-events-none absolute inset-0 transition duration-300"
+          style={{
+            background: `radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), rgba(240, 60, 46, 0.05), transparent 40%)`,
+          }}
+        />
+
+        {/* Interactive Grid Background */}
+        <div 
+          className="absolute inset-0 bg-[linear-gradient(to_right,#F03C2E_1px,transparent_1px),linear-gradient(to_bottom,#F03C2E_1px,transparent_1px)] bg-[size:24px_24px] opacity-20 [mask-image:radial-gradient(300px_circle_at_var(--x,_50%)_var(--y,_50%),black,transparent)] transition-opacity duration-300" 
+        />
+        {/* Static Faint Grid for Context */}
+         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-50" />
+
+        {/* Velocity Lines Animation - Primary Color */}
+        <div 
+          className="absolute inset-0 pointer-events-none overflow-hidden [mask-image:radial-gradient(500px_circle_at_var(--x,_50%)_var(--y,_50%),black,transparent)]"
+        >
+          <div className="absolute top-[20%] left-0 w-full h-[1px] bg-motovotive-red/30 animate-velocity-line" style={{ animationDuration: '3s' }} />
+          <div className="absolute top-[40%] left-0 w-full h-[1px] bg-motovotive-red/20 animate-velocity-line" style={{ animationDuration: '5s', animationDelay: '1s' }} />
+          <div className="absolute top-[60%] left-0 w-full h-[1px] bg-motovotive-red/25 animate-velocity-line" style={{ animationDuration: '4s', animationDelay: '0.5s' }} />
+          <div className="absolute top-[80%] left-0 w-full h-[1px] bg-motovotive-red/15 animate-velocity-line" style={{ animationDuration: '6s', animationDelay: '2s' }} />
+        </div>
+
+        <div className="container mx-auto px-4 py-12 md:py-24 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+          <div className="space-y-8 max-w-2xl flex-1 animate-slide-in-up">
+            <div className="inline-flex items-center bg-motovotive-red bg-opacity-20 gap-2 rounded-full pl-2 pr-4 py-1.5 border border-motovotive-red hover:border-motovotive-red/20 transition-colors cursor-default">
+              <div className="w-2 h-2 bg-motovotive-red rounded-full" />
+              <span className="text-sm font-medium tracking-wide text-motovotive-black">AI-Powered </span>
             </div>
-            <div>
-              <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-none drop-shadow-md">
-                WIN
+            
+            <div className="space-y-4 relative">
+              {/* Watermark Logo */}
+
+              <h1 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-none text-slate-900 relative z-10">
+                MOTION YOU <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-motovotive-red to-motovotive-orange">
+                  CAN TRUST.
+                </span>
               </h1>
-              <h2 className="text-3xl md:text-5xl font-bold mt-2 drop-shadow-sm">
-                Alfa Romeo Junior Speciale
-              </h2>
-              <p className="text-xl md:text-3xl opacity-90 font-medium mt-2">
-                worth £35,705
+              <p className="text-xl md:text-2xl text-slate-600 font-medium max-w-lg leading-relaxed relative z-10">
+                Made for Motion. Built with Motivation.
+                <span className="block text-sm mt-3 text-slate-500 font-normal">Algorithm-driven insights for the modern automotive enthusiast.</span>
               </p>
             </div>
-            <Button className="bg-white text-[#E60012] hover:bg-slate-100 rounded-full px-8 py-7 text-xl font-bold shadow-lg border-2 border-transparent hover:border-white/50 transition-all">
-              Enter on App
-            </Button>
-            <p className="text-xs opacity-70 max-w-xs">
-              Entrants must be 17+ and a resident of the UK. Closing date
-              30/11/25. Other T&Cs apply.
-            </p>
+
+            <div className="flex flex-wrap gap-4 pt-4">
+              <Button 
+                onClick={() => document.getElementById('search-form')?.scrollIntoView({ behavior: 'smooth' })}
+                className="bg-motovotive-red hover:bg-red-600 text-white border-2 border-transparent h-14 px-8 text-lg font-bold rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              >
+                Start Your Search
+              </Button>
+              <Button 
+                variant="outline" 
+                className="border-slate-200 bg-white text-slate-700 hover:text-motovotive-red hover:bg-slate-50 hover:border-slate-300 h-14 px-8 text-lg font-medium rounded-full transition-all"
+              >
+                How it Works
+              </Button>
+            </div>
           </div>
-          {/* Car Image Placeholder */}
-          <div className="hidden md:block flex-1 h-[400px] relative">
-            <Image
-              src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=1000&auto=format&fit=crop"
-              alt="Car"
-              fill
-              className="object-contain drop-shadow-2xl"
-              priority
-            />
+
+          {/* Hero Visual - Animated Cards */}
+          <div className="hidden lg:block flex-1 h-[500px] relative animate-fade-in w-full">
+             <HeroCarCards />
           </div>
         </div>
       </section>
 
       {/* Search Section */}
-      <section className="container mx-auto px-4 -mt-12 relative z-20">
-        <div className="bg-white rounded-3xl shadow-2xl p-1">
+      <section id="search-form" className="container mx-auto px-4 -mt-24 relative z-20 mb-20">
+        <div className="bg-white/80 backdrop-blur-xl rounded-[2rem] shadow-2xl p-2 border border-white/50">
           <form
             onSubmit={handleSubmit}
-            className="bg-white p-4 md:p-6 rounded-[1.4rem] border border-slate-100"
+            className="bg-white p-6 md:p-8 rounded-[1.6rem] shadow-sm border border-slate-100/50"
           >
-            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
+            <div className="flex flex-col lg:flex-row gap-5 items-start lg:items-end">
               {/* Postcode */}
-              <div className="w-full lg:flex-1 space-y-2">
+              <div className="w-full lg:flex-1 space-y-2.5">
                 <Label
                   htmlFor="postcode"
-                  className="text-sm font-bold text-slate-700 pl-1"
+                  className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1"
                 >
                   Postcode
                 </Label>
-                <div className="relative">
+                <div className="relative group">
                   <Input
                     id="postcode"
                     placeholder="e.g. EC1A 1BB"
                     value={criteria.postcode ?? ""}
                     onChange={handleInput("postcode")}
                     required
-                    className="h-12 rounded-xl border-slate-300 pl-10 bg-slate-50 focus:bg-white focus:ring-[#E60012] transition-all text-base"
+                    className="h-14 rounded-xl border-slate-200 pl-11 bg-slate-50/50 focus:bg-white transition-all text-base font-medium shadow-sm group-hover:border-slate-300"
                   />
-                  <div className="absolute left-3 top-3.5 text-slate-400">
+                  <div className="absolute left-3.5 top-4 text-slate-400 group-focus-within:text-motovotive-red transition-colors">
                     <Search className="w-5 h-5" />
                   </div>
                 </div>
               </div>
 
               {/* Make */}
-              <div className="w-full lg:flex-1 space-y-2">
+              <div className="w-full lg:flex-1 space-y-2.5">
                 <Label
                   htmlFor="make"
-                  className="text-sm font-bold text-slate-700 pl-1"
+                  className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1"
                 >
                   Make
                 </Label>
@@ -319,7 +378,7 @@ export default function HomePage() {
                 >
                   <SelectTrigger
                     id="make"
-                    className="h-12 rounded-xl border-slate-300 bg-slate-50 focus:bg-white focus:ring-[#E60012] text-base"
+                    className="h-14 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white text-base font-medium shadow-sm"
                   >
                     <SelectValue placeholder="Any make" />
                   </SelectTrigger>
@@ -335,10 +394,10 @@ export default function HomePage() {
               </div>
 
               {/* Model */}
-              <div className="w-full lg:flex-1 space-y-2">
+              <div className="w-full lg:flex-1 space-y-2.5">
                 <Label
                   htmlFor="model"
-                  className="text-sm font-bold text-slate-700 pl-1"
+                  className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1"
                 >
                   Model
                 </Label>
@@ -354,7 +413,7 @@ export default function HomePage() {
                 >
                   <SelectTrigger
                     id="model"
-                    className="h-12 rounded-xl border-slate-300 bg-slate-50 focus:bg-white focus:ring-[#E60012] text-base"
+                    className="h-14 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white text-base font-medium shadow-sm disabled:opacity-50 disabled:bg-slate-100"
                   >
                     <SelectValue
                       placeholder={
@@ -377,32 +436,30 @@ export default function HomePage() {
               <div className="w-full lg:w-auto">
                 <Button
                   type="submit"
-                  className="w-full lg:w-auto h-12 rounded-full bg-[#E60012] hover:bg-[#be000f] text-white px-8 font-bold text-lg shadow-lg hover:shadow-xl transition-all"
+                  size="lg"
+                  className="w-full lg:w-auto h-14 rounded-xl bg-velocity-gradient hover:bg-none hover:bg-motovotive-red text-white px-10 font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300"
                 >
-                  <span className="mr-2">Search</span>{" "}
-                  <span className="bg-white/20 rounded px-1.5 py-0.5 text-xs font-normal">
-                    4,000+ cars
-                  </span>
+                  <span className="mr-2">Search Cars</span>
                 </Button>
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4">
+            <div className="flex items-center justify-between pt-6 border-t border-slate-100 mt-6">
               <Button
                 type="button"
                 variant="ghost"
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className="text-[#E60012] hover:text-[#be000f] hover:bg-red-50 px-2 rounded-lg font-medium"
+                className="text-motovotive-red hover:text-motovotive-red hover:bg-red-50/50 px-3 py-2 h-auto rounded-lg font-semibold text-sm transition-all"
               >
                 <SlidersHorizontal className="w-4 h-4 mr-2" />
-                {showAdvanced ? "Hide advanced options" : "More options"}
+                {showAdvanced ? "Hide advanced filters" : "Show advanced filters"}
               </Button>
 
               <Button
                 type="button"
                 variant="ghost"
                 onClick={handleReset}
-                className="text-slate-500 hover:text-slate-700 px-2"
+                className="text-muted-foreground hover:text-foreground px-3 py-2 h-auto text-sm font-medium"
               >
                 Reset all
               </Button>
@@ -410,38 +467,42 @@ export default function HomePage() {
 
             {/* Advanced Filters */}
             {showAdvanced && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-6 border-t border-slate-100 animate-in fade-in slide-in-from-top-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-8 animate-accordion-down overflow-hidden">
                 {/* Sources */}
-                <div className="space-y-2 lg:col-span-4">
-                  <Label>Sources</Label>
-                  <div className="flex gap-2 flex-wrap">
+                <div className="space-y-3 lg:col-span-4 mb-2">
+                  <Label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Sources</Label>
+                  <div className="flex gap-3 flex-wrap">
                     {SOURCE_OPTIONS.map((source) => {
                       const isSelected =
                         !criteria.sources ||
                         criteria.sources.length === 0 ||
                         criteria.sources.includes(source.value);
                       return (
-                        <Button
-                          type="button"
+                        <div
                           key={source.value}
-                          variant={isSelected ? "default" : "outline"}
                           onClick={() => toggleSource(source.value)}
-                          className="h-8"
+                          className={`
+                            cursor-pointer px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border select-none
+                            ${isSelected 
+                              ? 'bg-motovotive-red text-white border-motovotive-red shadow-md transform scale-105' 
+                              : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                            }
+                          `}
                         >
                           {source.label}
-                        </Button>
+                        </div>
                       );
                     })}
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="bodyType">Body type</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="bodyType" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">Body type</Label>
                   <Select
                     value={criteria.bodyType ?? undefined}
                     onValueChange={handleSelectString("bodyType")}
                   >
-                    <SelectTrigger id="bodyType" className="rounded-lg">
+                    <SelectTrigger id="bodyType" className="h-11 rounded-xl">
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
                     <SelectContent>
@@ -454,8 +515,8 @@ export default function HomePage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="radius">Radius</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="radius" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">Radius</Label>
                   <Select
                     value={
                       criteria.radius !== undefined
@@ -464,7 +525,7 @@ export default function HomePage() {
                     }
                     onValueChange={handleSelectNumber("radius")}
                   >
-                    <SelectTrigger id="radius" className="rounded-lg">
+                    <SelectTrigger id="radius" className="h-11 rounded-xl">
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
                     <SelectContent>
@@ -477,15 +538,15 @@ export default function HomePage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="minYear">Min year</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="minYear" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">Min year</Label>
                   <Select
                     value={
                       criteria.minYear ? String(criteria.minYear) : undefined
                     }
                     onValueChange={handleSelectNumber("minYear")}
                   >
-                    <SelectTrigger id="minYear" className="rounded-lg">
+                    <SelectTrigger id="minYear" className="h-11 rounded-xl">
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
                     <SelectContent>
@@ -498,15 +559,15 @@ export default function HomePage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="maxYear">Max year</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="maxYear" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">Max year</Label>
                   <Select
                     value={
                       criteria.maxYear ? String(criteria.maxYear) : undefined
                     }
                     onValueChange={handleSelectNumber("maxYear")}
                   >
-                    <SelectTrigger id="maxYear" className="rounded-lg">
+                    <SelectTrigger id="maxYear" className="h-11 rounded-xl">
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
                     <SelectContent>
@@ -519,15 +580,15 @@ export default function HomePage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="priceFrom">Price from (£)</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="priceFrom" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">Price from (£)</Label>
                   <Select
                     value={
                       criteria.minPrice ? String(criteria.minPrice) : undefined
                     }
                     onValueChange={handleSelectNumber("minPrice")}
                   >
-                    <SelectTrigger id="priceFrom" className="rounded-lg">
+                    <SelectTrigger id="priceFrom" className="h-11 rounded-xl">
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
                     <SelectContent>
@@ -540,15 +601,15 @@ export default function HomePage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="priceTo">Price to (£)</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="priceTo" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">Price to (£)</Label>
                   <Select
                     value={
                       criteria.maxPrice ? String(criteria.maxPrice) : undefined
                     }
                     onValueChange={handleSelectNumber("maxPrice")}
                   >
-                    <SelectTrigger id="priceTo" className="rounded-lg">
+                    <SelectTrigger id="priceTo" className="h-11 rounded-xl">
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
                     <SelectContent>
@@ -561,8 +622,8 @@ export default function HomePage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="mileageFrom">Mileage from</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="mileageFrom" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">Mileage from</Label>
                   <Select
                     value={
                       criteria.minMileage
@@ -571,7 +632,7 @@ export default function HomePage() {
                     }
                     onValueChange={handleSelectNumber("minMileage")}
                   >
-                    <SelectTrigger id="mileageFrom" className="rounded-lg">
+                    <SelectTrigger id="mileageFrom" className="h-11 rounded-xl">
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
                     <SelectContent>
@@ -584,8 +645,8 @@ export default function HomePage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="mileageTo">Mileage to</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="mileageTo" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">Mileage to</Label>
                   <Select
                     value={
                       criteria.maxMileage
@@ -594,7 +655,7 @@ export default function HomePage() {
                     }
                     onValueChange={handleSelectNumber("maxMileage")}
                   >
-                    <SelectTrigger id="mileageTo" className="rounded-lg">
+                    <SelectTrigger id="mileageTo" className="h-11 rounded-xl">
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
                     <SelectContent>
@@ -607,13 +668,13 @@ export default function HomePage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="fuelType">Fuel type</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="fuelType" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">Fuel type</Label>
                   <Select
                     value={criteria.fuelType ?? undefined}
                     onValueChange={handleSelectString("fuelType")}
                   >
-                    <SelectTrigger id="fuelType" className="rounded-lg">
+                    <SelectTrigger id="fuelType" className="h-11 rounded-xl">
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
                     <SelectContent>
@@ -626,8 +687,8 @@ export default function HomePage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="transmission">Transmission</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="transmission" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">Transmission</Label>
                   <Select
                     value={
                       criteria.transmissions?.[0]
@@ -636,7 +697,7 @@ export default function HomePage() {
                     }
                     onValueChange={handleTransmissionChange}
                   >
-                    <SelectTrigger id="transmission" className="rounded-lg">
+                    <SelectTrigger id="transmission" className="h-11 rounded-xl">
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
                     <SelectContent>
@@ -649,13 +710,13 @@ export default function HomePage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="sellerType">Seller</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="sellerType" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">Seller</Label>
                   <Select
                     value={criteria.sellerType ?? undefined}
                     onValueChange={handleSelectString("sellerType")}
                   >
-                    <SelectTrigger id="sellerType" className="rounded-lg">
+                    <SelectTrigger id="sellerType" className="h-11 rounded-xl">
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
                     <SelectContent>
@@ -665,13 +726,13 @@ export default function HomePage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="doors">Doors</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="doors" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">Doors</Label>
                   <Select
                     value={criteria.doors ? String(criteria.doors) : undefined}
                     onValueChange={handleSelectNumber("doors")}
                   >
-                    <SelectTrigger id="doors" className="rounded-lg">
+                    <SelectTrigger id="doors" className="h-11 rounded-xl">
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
                     <SelectContent>
@@ -686,13 +747,13 @@ export default function HomePage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="seats">Seats</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="seats" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">Seats</Label>
                   <Select
                     value={criteria.seats ? String(criteria.seats) : undefined}
                     onValueChange={handleSelectNumber("seats")}
                   >
-                    <SelectTrigger id="seats" className="rounded-lg">
+                    <SelectTrigger id="seats" className="h-11 rounded-xl">
                       <SelectValue placeholder="Any" />
                     </SelectTrigger>
                     <SelectContent>
@@ -707,13 +768,13 @@ export default function HomePage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="sort">Sort by</Label>
+                <div className="space-y-2.5">
+                  <Label htmlFor="sort" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1">Sort by</Label>
                   <Select
                     value={criteria.sort ?? undefined}
                     onValueChange={handleSelectString("sort")}
                   >
-                    <SelectTrigger id="sort" className="rounded-lg">
+                    <SelectTrigger id="sort" className="h-11 rounded-xl">
                       <SelectValue placeholder="Default" />
                     </SelectTrigger>
                     <SelectContent>

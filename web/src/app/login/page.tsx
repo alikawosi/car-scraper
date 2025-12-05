@@ -1,6 +1,7 @@
 'use client'
 
 import { login, verifyOtp, signInWithPassword, signInWithGoogle, resetPassword } from '../auth/actions'
+import { Logo } from '@/components/ui/logo'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -142,18 +143,29 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-2xl shadow-xl transition-all duration-300">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-slate-900">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50/50 px-4 py-12 sm:px-6 lg:px-8 selection:bg-motovotive-red selection:text-white">
+      {/* Background decoration */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+         <div className="absolute -top-24 -right-24 w-96 h-96 bg-motovotive-red/5 rounded-full blur-3xl opacity-50" />
+         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-motovotive-orange/5 rounded-full blur-3xl opacity-50" />
+      </div>
+
+      <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-[2rem] shadow-2xl transition-all duration-300 border border-slate-100 relative z-10">
+        <div className="text-center">
+          <div className="flex justify-center mb-6">
+            <div className="flex items-center justify-center gap-3">
+               <Logo size={64} className="text-motovotive-red" />
+            </div>
+          </div>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground font-display">
             {step === 'otp' ? 'Verify your email' : 
              step === 'forgot-password' ? 'Reset your password' :
-             step === 'password' ? 'Sign in with password' : 'Sign in or Sign up'}
+             step === 'password' ? 'Welcome back' : 'Start your engine'}
           </h2>
-          <p className="mt-2 text-center text-sm text-slate-600">
+          <p className="mt-2 text-sm text-muted-foreground font-medium">
             {step === 'otp' ? `We sent a code to ${email}` :
              step === 'forgot-password' ? 'Enter your email to receive a reset link' :
-             step === 'password' ? 'Enter your password to sign in' : 'Enter your email to receive a verification code'}
+             step === 'password' ? 'Enter your password to sign in' : 'Sign in or create an account to continue'}
           </p>
         </div>
 
@@ -165,12 +177,12 @@ export default function LoginPage() {
                 type="button"
                 onClick={handleGoogleLogin}
                 disabled={loading}
-                className="w-full relative flex justify-center items-center gap-2 h-10"
+                className="w-full relative flex justify-center items-center gap-3 h-12 rounded-xl border-slate-200 hover:bg-slate-50 hover:border-slate-300 hover:text-foreground text-slate-600 font-semibold transition-all"
               >
                 {loading ? (
-                   <Loader2 className="w-4 h-4 animate-spin" />
+                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
-                   <svg className="w-4 h-4" viewBox="0 0 24 24">
+                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                       <path
                         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                         fill="#4285F4"
@@ -189,15 +201,15 @@ export default function LoginPage() {
                       />
                    </svg>
                 )}
-                Sign in with Google
+                Continue with Google
               </Button>
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-slate-300" />
+                  <span className="w-full border-t border-slate-200" />
                 </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-slate-500">
+                <div className="relative flex justify-center text-xs uppercase tracking-wider font-bold">
+                  <span className="bg-white px-3 text-muted-foreground">
                     Or continue with
                   </span>
                 </div>
@@ -209,11 +221,11 @@ export default function LoginPage() {
             className="space-y-6" 
             action={getFormAction()}
           >
-          <div className="space-y-4">
+          <div className="space-y-5">
             {/* Email Input */}
             <div className="space-y-2 relative">
-              <Label htmlFor="email-address">Email address</Label>
-              <div className="relative">
+              <Label htmlFor="email-address" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1 font-display">Email address</Label>
+              <div className="relative group">
                 <Input
                   id="email-address"
                   name="email"
@@ -224,16 +236,16 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={step === 'otp'}
                   className={cn(
-                    "relative block w-full rounded-md border-0 py-1.5 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-[#E60012] sm:text-sm sm:leading-6 transition-colors",
-                    step === 'otp' && "bg-slate-50 text-slate-500 pr-10"
+                    "relative block w-full rounded-xl border-slate-200 bg-slate-50/50 py-3 text-foreground focus:bg-white focus:ring-2 focus:ring-motovotive-red transition-all duration-200 h-12 text-base font-medium",
+                    step === 'otp' && "bg-slate-50 text-slate-500 pr-10 opacity-70"
                   )}
-                  placeholder="Email address"
+                  placeholder="name@example.com"
                 />
                 {step === 'otp' && (
                   <button
                     type="button"
                     onClick={handleEditEmail}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#E60012] transition-colors p-1"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-motovotive-red transition-colors p-1"
                     title="Edit email"
                   >
                     <Edit2 className="w-4 h-4" />
@@ -246,7 +258,7 @@ export default function LoginPage() {
             {step === 'password' && (
               <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-300">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1 font-display">Password</Label>
                   <button
                     type="button"
                     onClick={() => {
@@ -254,7 +266,7 @@ export default function LoginPage() {
                       setError('')
                       setSuccessMessage('')
                     }}
-                    className="text-sm font-medium text-[#E60012] hover:text-[#be000f] transition-colors"
+                    className="text-xs font-bold text-motovotive-red hover:text-motovotive-orange transition-colors uppercase tracking-wide"
                   >
                     Forgot password?
                   </button>
@@ -266,7 +278,7 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="relative block w-full rounded-md border-0 py-1.5 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-[#E60012] sm:text-sm sm:leading-6"
+                  className="relative block w-full rounded-xl border-slate-200 bg-slate-50/50 py-3 text-foreground focus:bg-white focus:ring-2 focus:ring-motovotive-red transition-all duration-200 h-12 text-base font-medium"
                   placeholder="Enter your password"
                   autoFocus
                 />
@@ -276,7 +288,7 @@ export default function LoginPage() {
             {/* OTP Input Section */}
             {step === 'otp' && (
               <div className="space-y-2 animate-in fade-in slide-in-from-top-4 duration-300">
-                <Label htmlFor="token">Verification Code</Label>
+                <Label htmlFor="token" className="text-xs font-bold text-muted-foreground uppercase tracking-wider pl-1 font-display">Verification Code</Label>
                 <div className="relative">
                   <Input
                     id="token"
@@ -285,13 +297,14 @@ export default function LoginPage() {
                     required
                     value={token}
                     onChange={(e) => setToken(e.target.value)}
-                    className="relative block w-full rounded-md border-0 py-1.5 text-slate-900 ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-[#E60012] sm:text-sm sm:leading-6 pr-24"
+                    className="relative block w-full rounded-xl border-slate-200 bg-slate-50/50 py-3 text-foreground focus:bg-white focus:ring-2 focus:ring-motovotive-red transition-all duration-200 h-12 text-base font-medium pr-24 tracking-[0.5em] text-center uppercase font-mono"
                     placeholder="123456"
                     autoFocus
+                    maxLength={6}
                   />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 text-xs font-medium">
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 text-xs font-medium bg-white/80 backdrop-blur px-2 py-1 rounded-md">
                     {timeLeft > 0 ? (
-                      <span className="text-slate-400 tabular-nums">
+                      <span className="text-muted-foreground tabular-nums font-mono">
                         {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
                       </span>
                     ) : (
@@ -299,7 +312,7 @@ export default function LoginPage() {
                         type="button"
                         onClick={handleResend}
                         disabled={loading}
-                        className="flex items-center gap-1 text-[#E60012] hover:text-[#be000f] transition-colors disabled:opacity-50"
+                        className="flex items-center gap-1 text-motovotive-red hover:text-motovotive-orange transition-colors disabled:opacity-50 font-bold uppercase tracking-wide text-[10px]"
                       >
                         {loading ? (
                           <Loader2 className="w-3 h-3 animate-spin" />
@@ -316,13 +329,14 @@ export default function LoginPage() {
           </div>
 
           {error && (
-            <div className="text-red-600 text-sm text-center animate-in fade-in zoom-in-95">
+            <div className="text-red-600 text-sm font-medium text-center animate-in fade-in zoom-in-95 bg-red-50 p-3 rounded-xl border border-red-100 flex items-center justify-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
               {error}
             </div>
           )}
 
           {successMessage && (
-             <div className="flex items-center justify-center gap-2 text-green-600 text-sm text-center animate-in fade-in zoom-in-95 bg-green-50 p-3 rounded-md border border-green-200">
+             <div className="flex items-center justify-center gap-2 text-green-600 text-sm font-medium text-center animate-in fade-in zoom-in-95 bg-green-50 p-3 rounded-xl border border-green-200">
                 <CheckCircle2 className="w-4 h-4" />
                 {successMessage}
              </div>
@@ -332,12 +346,12 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={loading || (step === 'forgot-password' && !!successMessage)}
-              className="group relative flex w-full justify-center rounded-md bg-[#E60012] px-3 py-2 text-sm font-semibold text-white hover:bg-[#be000f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E60012] transition-all duration-200 disabled:opacity-70"
+              className="group relative flex w-full justify-center items-center h-12 rounded-xl bg-velocity-gradient hover:bg-none hover:bg-motovotive-red text-white font-bold text-base shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-70 disabled:hover:translate-y-0 disabled:shadow-none"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  {step === 'forgot-password' ? 'Sending link...' : 'Signing in...'}
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  {step === 'forgot-password' ? 'Sending...' : 'Signing in...'}
                 </span>
               ) : (
                 step === 'forgot-password' ? 'Send Reset Link' : 'Sign In'
@@ -348,17 +362,17 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={step === 'forgot-password' ? () => setStep('password') : toggleAuthMethod}
-                className="w-full flex items-center justify-center gap-2 text-sm text-slate-600 hover:text-[#E60012] transition-colors"
+                className="w-full flex items-center justify-center gap-2 text-sm font-medium text-muted-foreground hover:text-motovotive-red transition-colors group py-2"
               >
                 {step === 'forgot-password' ? (
                   <>
-                    <ArrowLeft className="w-4 h-4" />
+                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     Back to login
                   </>
                 ) : step === 'password' ? (
                   <>
                     <Mail className="w-4 h-4" />
-                    Sign in with OTP
+                    Sign in with verification code
                   </>
                 ) : (
                   <>
