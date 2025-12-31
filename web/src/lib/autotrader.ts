@@ -124,9 +124,16 @@ export async function scrapeAutoTrader(criteria: SearchCriteria): Promise<{
 
   const browser = await puppeteer.launch({
     args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
+    defaultViewport: {
+      width: 1366,
+      height: 768,
+      deviceScaleFactor: 1,
+      isMobile: false,
+      hasTouch: false,
+      isLandscape: true,
+    },
     executablePath,
-    headless: chromium.headless,
+    headless: chromium.headless === "shell" ? "shell" : !!chromium.headless,
   });
 
   try {
