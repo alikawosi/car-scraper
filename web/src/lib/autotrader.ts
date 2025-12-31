@@ -1,4 +1,5 @@
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 import {
   AdapterError,
   AUTOTRADER_BASE_URL,
@@ -9,6 +10,12 @@ import {
   parsePrice,
   milesToKm,
 } from "./types";
+
+// Force local chromium for development
+if (process.env.NODE_ENV === "development") {
+  chromium.setHeadlessMode = true;
+  chromium.setGraphicsMode = false;
+}
 
 type RawCard = {
   title: string;
@@ -103,11 +110,25 @@ export async function scrapeAutoTrader(criteria: SearchCriteria): Promise<{
   url: string;
 }> {
   const url = buildSearchUrl(criteria);
-  const headless = process.env.AUTOTRADER_HEADLESS ?? (true as boolean);
+  
+  let executablePath: string;
+  if (process.env.NODE_ENV === "production" || process.env.VERCEL) {
+    executablePath = await chromium.executablePath();
+  } else {
+    // For local development, use a locally installed Chrome/Chromium
+    // You might need to adjust this path based on your OS and Chrome installation
+    // Or set a PUPPETEER_EXECUTABLE_PATH env var
+    executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || 
+      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"; // Example for macOS
+  }
+
   const browser = await puppeteer.launch({
-    headless: headless as boolean,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath,
+    headless: chromium.headless,
   });
+
   try {
     const page = await browser.newPage();
     await page.setViewport({ width: 1366, height: 768 });
@@ -238,7 +259,9 @@ export async function scrapeAutoTrader(criteria: SearchCriteria): Promise<{
       `Failed to fetch AutoTrader data: ${(error as Error).message}`
     );
   } finally {
-    await browser.close();
+    if (browser) {
+      await browser.close();
+    }
   }
 }
 
