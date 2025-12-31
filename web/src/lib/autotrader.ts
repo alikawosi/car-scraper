@@ -1,6 +1,4 @@
-import puppeteer from "puppeteer-extra";
-import StealthPlugin from "puppeteer-extra-plugin-stealth";
-
+import puppeteer from "puppeteer";
 import {
   AdapterError,
   AUTOTRADER_BASE_URL,
@@ -22,28 +20,6 @@ type RawCard = {
   link?: string;
   textBlock?: string;
 };
-
-let stealthApplied = false;
-
-function ensureStealthPlugin(): void {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/b23b7aa9-924a-4665-a94a-f52bb7fa46d9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'web/src/lib/autotrader.ts:ensureStealthPlugin',message:'ensureStealthPlugin called',data:{stealthApplied},timestamp:Date.now(),sessionId:'debug-session'})}).catch(()=>{});
-  // #endregion
-  if (!stealthApplied) {
-    try {
-      puppeteer.use(StealthPlugin());
-      stealthApplied = true;
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b23b7aa9-924a-4665-a94a-f52bb7fa46d9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'web/src/lib/autotrader.ts:ensureStealthPlugin',message:'StealthPlugin applied',data:{},timestamp:Date.now(),sessionId:'debug-session'})}).catch(()=>{});
-      // #endregion
-    } catch (e) {
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b23b7aa9-924a-4665-a94a-f52bb7fa46d9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'web/src/lib/autotrader.ts:ensureStealthPlugin',message:'StealthPlugin failed',data:{error:(e as Error).message, stack:(e as Error).stack},timestamp:Date.now(),sessionId:'debug-session'})}).catch(()=>{});
-      // #endregion
-      throw e;
-    }
-  }
-}
 
 export function buildSearchUrl(criteria: SearchCriteria): string {
   const params = new URLSearchParams();
@@ -126,7 +102,6 @@ export async function scrapeAutoTrader(criteria: SearchCriteria): Promise<{
   cars: ScrapedCar[];
   url: string;
 }> {
-  ensureStealthPlugin();
   const url = buildSearchUrl(criteria);
   const headless = process.env.AUTOTRADER_HEADLESS ?? (true as boolean);
   const browser = await puppeteer.launch({
@@ -267,23 +242,10 @@ export async function scrapeAutoTrader(criteria: SearchCriteria): Promise<{
   }
 }
 
-// #region agent log
-function debugLog(message: string, data?: any) {
-  fetch('http://127.0.0.1:7242/ingest/b23b7aa9-924a-4665-a94a-f52bb7fa46d9',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'web/src/lib/autotrader.ts',message,data,timestamp:Date.now(),sessionId:'debug-session'})}).catch(()=>{});
-}
-// #endregion
-
 export async function searchAutoTrader(criteria: SearchCriteria): Promise<{
   cars: ScrapedCar[];
   sourceUrl: string;
 }> {
-  debugLog('searchAutoTrader called', { criteria });
-  try {
-     const { cars, url } = await scrapeAutoTrader(criteria);
-     debugLog('searchAutoTrader success', { carsCount: cars.length });
-     return { cars, sourceUrl: url };
-  } catch (e) {
-     debugLog('searchAutoTrader failed', { error: (e as Error).message, stack: (e as Error).stack });
-     throw e;
-  }
+  const { cars, url } = await scrapeAutoTrader(criteria);
+  return { cars, sourceUrl: url };
 }
