@@ -113,7 +113,9 @@ export async function scrapeAutoTrader(criteria: SearchCriteria): Promise<{
   
   let executablePath: string;
   if (process.env.NODE_ENV === "production" || process.env.VERCEL) {
-    executablePath = await chromium.executablePath();
+    executablePath = await chromium.executablePath(
+      "https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"
+    );
   } else {
     // For local development, use a locally installed Chrome/Chromium
     // You might need to adjust this path based on your OS and Chrome installation
