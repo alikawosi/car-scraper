@@ -2,10 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   serverExternalPackages: [
-    "puppeteer",
-    "puppeteer-extra",
-    "puppeteer-extra-plugin-stealth",
+    "@sparticuz/chromium",
   ],
+  outputFileTracingIncludes: {
+    "/api/search": [
+      "./node_modules/@sparticuz/chromium/bin/**/*",
+    ],
+  },
   images: {
     remotePatterns: [
       {
@@ -21,6 +24,11 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "i.ebayimg.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "ir.ebaystatic.com",
         pathname: "/**",
       },
       {
