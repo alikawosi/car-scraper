@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
     "puppeteer",
     "puppeteer-extra",
     "puppeteer-extra-plugin-stealth",
+    "is-plain-object",
+    "merge-deep",
+    "clone-deep",
   ],
   images: {
     remotePatterns: [

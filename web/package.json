@@ -19,9 +19,11 @@
     "@supabase/supabase-js": "^2.84.0",
     "cheerio": "^1.1.2",
     "class-variance-authority": "^0.7.1",
+    "clone-deep": "^4.0.1",
     "clsx": "^2.1.1",
     "is-plain-object": "^2.0.4",
     "lucide-react": "^0.554.0",
+    "merge-deep": "^3.0.3",
     "next": "16.1.1",
     "openai": "^6.9.1",
     "puppeteer": "^24.30.0",
@@ -44,5 +46,10 @@
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5"
+  },
+  "pnpm": {
+    "overrides": {
+      "is-plain-object": "^2.0.4"
+    }
   }
 }
