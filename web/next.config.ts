@@ -4,12 +4,10 @@ const nextConfig: NextConfig = {
   serverExternalPackages: [
     "@sparticuz/chromium",
   ],
-  experimental: {
-    outputFileTracingIncludes: {
-      "/api/search": [
-        "./node_modules/@sparticuz/chromium/bin/**/*",
-      ],
-    },
+  outputFileTracingIncludes: {
+    "/api/search": [
+      "./node_modules/@sparticuz/chromium/bin/**/*",
+    ],
   },
   images: {
     remotePatterns: [
