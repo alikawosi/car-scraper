@@ -13,7 +13,7 @@ import {
 
 // Force local chromium for development
 if (process.env.NODE_ENV === "development") {
-  chromium.setHeadlessMode = true;
+  // chromium.setHeadlessMode = true; // Removed to fix type error
   chromium.setGraphicsMode = false;
 }
 
