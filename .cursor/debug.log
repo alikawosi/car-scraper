@@ -1,8 +1,0 @@
-{"location":"web/src/lib/autotrader.ts","message":"searchAutoTrader called","data":{"criteria":{"make":"BMW","postcode":"SW1A 1AA","radius":10,"minPrice":1000,"maxPrice":10000}},"timestamp":1767156233243,"sessionId":"debug-session"}
-{"location":"web/src/lib/autotrader.ts:ensureStealthPlugin","message":"ensureStealthPlugin called","data":{"stealthApplied":false},"timestamp":1767156233251,"sessionId":"debug-session"}
-{"location":"web/src/lib/autotrader.ts:ensureStealthPlugin","message":"StealthPlugin applied","data":{},"timestamp":1767156233253,"sessionId":"debug-session"}
-{"location":"web/src/lib/autotrader.ts","message":"searchAutoTrader success","data":{"carsCount":16},"timestamp":1767156236561,"sessionId":"debug-session"}
-{"location":"web/src/lib/autotrader.ts","message":"searchAutoTrader called","data":{"criteria":{"make":"BMW","postcode":"SW1A 1AA","radius":10,"minPrice":1000,"maxPrice":10000}},"timestamp":1767156301282,"sessionId":"debug-session"}
-{"location":"web/src/lib/autotrader.ts:ensureStealthPlugin","message":"ensureStealthPlugin called","data":{"stealthApplied":false},"timestamp":1767156301289,"sessionId":"debug-session"}
-{"location":"web/src/lib/autotrader.ts:ensureStealthPlugin","message":"StealthPlugin applied","data":{},"timestamp":1767156301292,"sessionId":"debug-session"}
-{"location":"web/src/lib/autotrader.ts","message":"searchAutoTrader success","data":{"carsCount":16},"timestamp":1767156304839,"sessionId":"debug-session"}
