@@ -28,6 +28,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "ir.ebaystatic.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
