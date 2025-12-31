@@ -133,6 +133,7 @@ export async function scrapeAutoTrader(criteria: SearchCriteria): Promise<{
       isLandscape: true,
     },
     executablePath,
+    // @ts-ignore
     headless: chromium.headless === "shell" ? "shell" : !!chromium.headless,
   });
 
