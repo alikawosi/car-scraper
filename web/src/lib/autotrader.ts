@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer-core";
-import chromium from "@sparticuz/chromium-min";
+import chromium from "@sparticuz/chromium";
 import {
   AdapterError,
   AUTOTRADER_BASE_URL,
@@ -113,9 +113,7 @@ export async function scrapeAutoTrader(criteria: SearchCriteria): Promise<{
   
   let executablePath: string;
   if (process.env.NODE_ENV === "production" || process.env.VERCEL) {
-    executablePath = await chromium.executablePath(
-      "https://github.com/Sparticuz/chromium/releases/download/v123.0.1/chromium-v123.0.1-pack.tar"
-    );
+    executablePath = await chromium.executablePath();
   } else {
     // For local development, use a locally installed Chrome/Chromium
     // You might need to adjust this path based on your OS and Chrome installation
