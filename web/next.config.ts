@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
     "is-plain-object",
     "merge-deep",
     "clone-deep",
+    "kind-of",
+    "shallow-clone",
   ],
   images: {
     remotePatterns: [
